@@ -31,6 +31,7 @@ int	main(void)
 
 	length = num_length(num);
 
+	// check the cardtype, based on length and cards first number
 	if (length == 15)
 		check_amex(num, length);
 	else if (length == 13)
@@ -55,15 +56,15 @@ void	check_master_or_visa(long num, int length)
 		copy /= 10;
 		pos++;
 	}
-	if (copy / 10 == 4)
+	if (copy / 10 == 4)		// visas first number is 4
 	{
 		if (checksum(num, length))
 			ft_printf("VISA\n");
 	}
-	else if (copy / 10 == 5)
+	else if (copy / 10 == 5)	// mastercards first number is 5
 	{
 		second = copy % 10;
-		if (second >= 1 && second <= 5)
+		if (second >= 1 && second <= 5) // mastercards second number is from 1 to 5
 		{
 			if (checksum(num, length))
 				ft_printf("MASTERCARD\n");
@@ -75,6 +76,7 @@ void	check_master_or_visa(long num, int length)
 		print_invalid();
 }
 
+// sum of every other digit * 2. if result > 9, sum of those digits
 int	sum_digits(long num)
 {
 	int result;
@@ -92,12 +94,12 @@ int	sum_digits(long num)
 	}
 }
 
+// calculate the checksum for the cards numbers. algorhitm can be found in the task.
 int	checksum(long num, int length)
 {
 	long 	num_copy;
 	int		total;
 	int		len_copy;
-	int		modulo;
 
 	total = 0;
 	num_copy = num;
@@ -141,7 +143,7 @@ void	check_visa(long num, int length)
 		copy /= 10;
 		pos++;
 	}
-	if (copy == 4)
+	if (copy == 4)		// visas first number is 4
 	{
 		if (checksum(num, length))
 			ft_printf("VISA\n");
@@ -162,10 +164,10 @@ void	check_amex(long num, int length)
 		copy /= 10;
 		pos++;
 	}
-	if (copy % 10 == 7 || copy % 10 == 4)
+	if (copy % 10 == 7 || copy % 10 == 4)	// amex's second number is 4 or 7
 	{
 		copy /= 10;
-		if (copy % 10 == 3)
+		if (copy % 10 == 3)			// first number is 3
 		{
 			if (checksum(num, length))
 				ft_printf("AMEX\n");
@@ -195,6 +197,7 @@ int	num_length(long num)
 	return (result);
 }
 
+// check if all characters are digits
 int	all_digits(char *str)
 {
 	int	i;
