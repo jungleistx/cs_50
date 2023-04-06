@@ -20,22 +20,22 @@ int main(void)
 	while (level <= height)
 	{
 		tmp = height - level;
-		while (tmp > 0)
+		while (tmp > 0)			// print space(s) between left-side and first #
 		{
 			ft_printf(" ");
 			tmp--;
 		}
 		tmp = level;
-		while (tmp > 0)
+		while (tmp > 0)			// # before middle
 		{
 			ft_printf("#");
 			tmp--;
 		}
 
-		ft_printf("  ");
+		ft_printf("  ");		// middle space
 
 		tmp = level;
-		while (tmp > 0)
+		while (tmp > 0)			// # after middle
 		{
 			ft_printf("#");
 			tmp--;
