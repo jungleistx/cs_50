@@ -39,13 +39,13 @@ int	count_total(char *str, int *letters)
 	i = 0;
 	while (str[i])
 	{
-		if (str[i] >= 97 && str[i] <= 122)
+		if (str[i] >= 97 && str[i] <= 122)	// a-z
 		{
-			total += letters[str[i] - 97];
+			total += letters[str[i] - 97];	// - 'a'
 		}
-		else if (str[i] >= 65 && str[i] <= 90)
+		else if (str[i] >= 65 && str[i] <= 90) // A-Z
 		{
-			total += letters[str[i] - 65];
+			total += letters[str[i] - 65];	//	- 'A'
 		}
 		i++;
 	}
