@@ -9,7 +9,7 @@ My libft is found here: </br>
 https://github.com/jungleistx/libft
 
 # How to run (from the root directory)
-- Week 1
+- Week 1 </br>
 	gcc week1/population.c libft.a && ./a.out </br>
 	gcc week1/mario.c libft.a && ./a.out </br>
 	gcc week1/credit.c week1/ft_atol.c libft.a && ./a.out </br>
