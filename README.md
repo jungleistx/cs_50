@@ -8,7 +8,7 @@ I used my own libft-library, which contains previously done functions like ft_pr
 My libft is found here: </br>
 https://github.com/jungleistx/libft
 
-# How to run (from the root dorectory)
+# How to run (from the root directory)
 - Week 1
 	gcc week1/population.c libft.a && ./a.out
 	gcc week1/mario.c libft.a && ./a.out
