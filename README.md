@@ -10,9 +10,9 @@ https://github.com/jungleistx/libft
 
 # How to run (from the root directory)
 - Week 1
-	gcc week1/population.c libft.a && ./a.out
-	gcc week1/mario.c libft.a && ./a.out
-	gcc week1/credit.c week1/ft_atol.c libft.a && ./a.out
+	gcc week1/population.c libft.a && ./a.out </br>
+	gcc week1/mario.c libft.a && ./a.out </br>
+	gcc week1/credit.c week1/ft_atol.c libft.a && ./a.out </br>
 
 NOTE: I didnt have access to the starting materials or the cs50-library, </br>
 so some of my implementations might be different from the originals. </br>
