@@ -6,11 +6,11 @@
 /*   By: skattankakku <skattankakku@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 20:18:18 by rvuorenl          #+#    #+#             */
-/*   Updated: 2023/04/05 19:29:06 by skattankakk      ###   ########.fr       */
+/*   Updated: 2023/04/11 16:19:22 by skattankakk      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/libft.h"
+#include "../includes/libft.h"
 
 static void	set_negative(int *negative, char c, int *i)
 {
