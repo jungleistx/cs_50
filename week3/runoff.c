@@ -8,14 +8,14 @@ typedef struct candidate
 	int		eliminated;
 }			candidate;
 
-// int		check_winner(int major_votes, int tot_candidates, candidate *candidates);
-
+int		check_winner(int major_votes, int tot_candidates, candidate *candidates);
 void	vote(int **ballot, int voters, int tot_candidates, candidate *candidates);
 void	free_ballots(int **ballot, int voters);
 void	init_ballots(int **ballot, int voters);
 void	init_candidates(char **argv, candidate *candidates, int tot_candidates);
 int		get_voters(void);
 void	set_total_candidates(int *tot_candidates, int argc);
+void	count_first_votes(int **ballot, int voters, candidate *candidates);
 
 int main(int argc, char **argv)
 {
@@ -37,17 +37,15 @@ int main(int argc, char **argv)
 	init_ballots(ballot, voters);
 	init_candidates(argv, candidates, tot_candidates);
 
-	// count majority (instant win)
-	major_votes = (voters / 2) + 1;
+	major_votes = (voters / 2) + 1;		// votes needed for win
 
 	vote(ballot, voters, tot_candidates, candidates);
-
 	count_first_votes(ballot, voters, candidates);
 
-	// while (!(check_winner(major_votes, tot_candidates, candidates)))
-	// {
-	// 	delete_last_candidate(candidates, tot_candidates);
-	// }
+	while (!(check_winner(major_votes, tot_candidates, candidates)))
+	{
+		// delete_last_candidate(candidates, tot_candidates);
+	}
 
 	free_ballots(ballot, voters);
 	free_candidates(candidates, tot_candidates);
@@ -217,22 +215,22 @@ void	init_candidates(char **argv, candidate *candidates, int tot_candidates)
 // }
 
 
-// int	check_winner(int major_votes, int tot_candidates, candidate *candidates)
-// {
-// 	int i;
+int	check_winner(int major_votes, int tot_candidates, candidate *candidates)
+{
+	int i;
 
-// 	i = 0;
-// 	while (i < tot_candidates)
-// 	{
-// 		if (candidates[i].votes[0] >= major_votes)
-// 		{
-// 			ft_printf("%s\n", candidates[i].name);
-// 			return (1);
-// 		}
-// 		i++;
-// 	}
-// 	return (0);
-// }
+	i = 0;
+	while (i < tot_candidates)
+	{
+		if (candidates[i].votes >= major_votes)
+		{
+			ft_printf("\n%s\n", candidates[i].name);
+			return (1);
+		}
+		i++;
+	}
+	return (0);
+}
 
 void	free_ballots(int **ballot, int voters)
 {
