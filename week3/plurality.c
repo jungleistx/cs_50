@@ -7,15 +7,15 @@ typedef struct candidate
 	int		votes;
 }			candidate;
 
-void print_winner(candidate *cands, int candidates);
-void vote(int voters, int tot_candidates, candidate *cands);
+void	print_winner(candidate *candidates, int tot_candidates);
+void	vote(int voters, int tot_candidates, candidate *candidates);
 
 int main(int argc, char **argv)
 {
-	candidate cand[MAX];
-	int i;
-	int voters;
-	char *input;
+	candidate	candidates[MAX];
+	int			i;
+	int			voters;
+	char		*input;
 
 	if (argc < 2)
 	{
@@ -27,8 +27,8 @@ int main(int argc, char **argv)
 	i = 0;
 	while (i < argc - 1)
 	{
-		cand[i].name = ft_strdup(argv[i + 1]);
-		cand[i].votes = 0;
+		candidates[i].name = ft_strdup(argv[i + 1]);
+		candidates[i].votes = 0;
 		i++;
 	}
 
@@ -45,43 +45,43 @@ int main(int argc, char **argv)
 		}
 	}
 
-	vote(voters, argc - 1,  cand);
-	print_winner(cand, argc - 1);
+	vote(voters, argc - 1,  candidates);
+	print_winner(candidates, argc - 1);
 
 	// free candidate names
 	i = 0;
 	while (i < argc - 1)
 	{
-		ft_strdel(&(cand[i].name));
+		ft_strdel(&(candidates[i].name));
 		i++;
 	}
 	return (0);
 }
 
-void print_winner(candidate *candis, int candidates)
+void print_winner(candidate *candidates, int tot_candidates)
 {
 	int	i;
 	int	max;
 
 	max = 0;
 	i = 0;
-	while (i < candidates)
+	while (i < tot_candidates)
 	{
-		if (max < (candis[i]).votes)
-			max = (candis[i]).votes;
+		if (max < (candidates[i]).votes)
+			max = (candidates[i]).votes;
 		i++;
 	}
 	ft_printf("\nWinners:\n");
 	i = 0;
-	while (i < candidates)
+	while (i < tot_candidates)
 	{
-		if ((candis[i]).votes == max)
-			ft_printf("%s\n", (candis[i]).name);
+		if ((candidates[i]).votes == max)
+			ft_printf("%s\n", (candidates[i]).name);
 		i++;
 	}
 }
 
-void vote(int voters, int tot_candidates, candidate *candis)
+void vote(int voters, int tot_candidates, candidate *candidates)
 {
 	int		i;
 	char	*ballot;
@@ -99,10 +99,10 @@ void vote(int voters, int tot_candidates, candidate *candis)
 			j = 0;
 			while (j < tot_candidates)
 			{
-				if (ft_strequ(ballot, (candis[j]).name))
+				if (ft_strequ(ballot, (candidates[j]).name))
 				{
 					found = 1;
-					(candis[j]).votes++;
+					(candidates[j]).votes++;
 					break ;
 				}
 				j++;
