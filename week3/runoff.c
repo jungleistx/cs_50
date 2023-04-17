@@ -42,6 +42,8 @@ int main(int argc, char **argv)
 
 	vote(ballot, voters, tot_candidates, candidates);
 
+	count_first_votes(ballot, voters, candidates);
+
 	// while (!(check_winner(major_votes, tot_candidates, candidates)))
 	// {
 	// 	delete_last_candidate(candidates, tot_candidates);
@@ -63,6 +65,22 @@ int main(int argc, char **argv)
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 
+void	count_first_votes(int **ballot, int voters, candidate *candidates)
+{
+	int	i;
+	int	pos;
+
+	i = 0;
+	while (i < voters)
+	{
+		if (ballot[i][0] != -1)
+		{
+			pos = ballot[i][0];			// voters first choice
+			candidates[pos].votes++;
+		}
+		i++;
+	}
+}
 
 void	vote(int **ballot, int voters, int tot_candidates, candidate *candidates)
 {
