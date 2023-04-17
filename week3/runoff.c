@@ -14,11 +14,12 @@ typedef struct candidate
 void	free_ballots(int **ballot, int voters);
 void	init_ballots(int **ballot, int voters, int tot_candidates);
 void	init_candidates(char **argv, candidate *candidates, int tot_candidates);
+int		get_voters(void);
 
 int main(int argc, char **argv)
 {
 	int 		voters;
-	char 		*input;
+	// char 		*input;
 	int 		major_votes;
 	int			i;
 	int			j;
@@ -39,18 +40,7 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	voters = 0;
-	while (voters < 1)
-	{
-		ft_printf("Enter number of voters: ");
-		get_next_line(0, &input);
-		if (input)
-		{
-			voters = ft_atoi(input);
-			ft_strdel(&input);
-		}
-	}
-
+	get_voters();
 	init_ballots(ballot, voters, tot_candidates);
 	init_candidates(argv, candidates, tot_candidates);
 
@@ -79,6 +69,63 @@ int main(int argc, char **argv)
 
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+
+int	get_voters(void)
+{
+	char	*input;
+	int		voters;
+
+	voters = 0;
+	while (voters < 1)
+	{
+		ft_printf("Enter number of voters: ");
+		get_next_line(0, &input);
+		if (input)
+		{
+			voters = ft_atoi(input);
+			ft_strdel(&input);
+		}
+	}
+	return (voters);
+}
+
+// void	vote(int voters, int tot_candidates, candidate *candidates)
+// {
+// 	int		i;
+// 	int		j;
+// 	int		k;
+// 	char	*input;
+
+// 	i = 0;
+// 	while (i < voters)
+// 	{
+// 		// all vote 3 times
+// 		j = 0;
+// 		while (j < 3)
+// 		{
+// 			ft_printf("Rank %d: ", j + 1);
+// 			get_next_line(0, &input);
+// 			if (input)
+// 			{
+// 				k = 0;
+// 				while (k < tot_candidates)
+// 				{
+// 					if (ft_strequ(candidates[k].name, input))
+// 					{
+// 						// add vote to candidates jth-preference index
+// 						(candidates[k]).votes[j]++;
+// 						break ;
+// 					}
+// 					k++;
+// 				}
+// 				ft_strdel(&input);
+// 			}
+// 			j++;
+// 		}
+// 		ft_printf("\n");
+// 		i++;
+// 	}
+// }
 
 void	free_candidates(candidate *candidates, int tot_candidates)
 {
@@ -148,43 +195,6 @@ void	init_candidates(char **argv, candidate *candidates, int tot_candidates)
 
 // }
 
-// void	vote(int voters, int tot_candidates, candidate *candidates)
-// {
-// 	int		i;
-// 	int		j;
-// 	int		k;
-// 	char	*input;
-
-// 	i = 0;
-// 	while (i < voters)
-// 	{
-// 		// all vote 3 times
-// 		j = 0;
-// 		while (j < 3)
-// 		{
-// 			ft_printf("Rank %d: ", j + 1);
-// 			get_next_line(0, &input);
-// 			if (input)
-// 			{
-// 				k = 0;
-// 				while (k < tot_candidates)
-// 				{
-// 					if (ft_strequ(candidates[k].name, input))
-// 					{
-// 						// add vote to candidates jth-preference index
-// 						(candidates[k]).votes[j]++;
-// 						break ;
-// 					}
-// 					k++;
-// 				}
-// 				ft_strdel(&input);
-// 			}
-// 			j++;
-// 		}
-// 		ft_printf("\n");
-// 		i++;
-// 	}
-// }
 
 // int	check_winner(int major_votes, int tot_candidates, candidate *candidates)
 // {
