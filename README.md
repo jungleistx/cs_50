@@ -13,6 +13,13 @@ https://github.com/jungleistx/libft
 	gcc week1/population.c libft.a && ./a.out </br>
 	gcc week1/mario.c libft.a && ./a.out </br>
 	gcc week1/credit.c week1/ft_atol.c libft.a && ./a.out </br>
+	gcc week1/cash.c libft.a && ./a.out </br>
+- Week 2 </br>
+	gcc week2/scrabble.c libft.a && ./a.out </br>
+	gcc week2/bulbs.c libft.a && ./a.out </br>
+	gcc week2/caesar.c libft.a && ./a.out key </br>
+	gcc week2/substitution.c libft.a && ./a.out VCHPRZGJNTLSKFBDQWAXEUYMOI </br>
+	chmod u+x week2/wordle/wordle.sh && ./week2/wordle/wordle.sh [wordsize] </br>
 
 NOTE: I didnt have access to the starting materials or the cs50-library, </br>
 so some of my implementations might be different from the originals. </br>
