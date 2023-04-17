@@ -15,11 +15,11 @@ void	free_ballots(int **ballot, int voters);
 void	init_ballots(int **ballot, int voters, int tot_candidates);
 void	init_candidates(char **argv, candidate *candidates, int tot_candidates);
 int		get_voters(void);
+void	set_total_candidates(int *tot_candidates, int argc);
 
 int main(int argc, char **argv)
 {
 	int 		voters;
-	// char 		*input;
 	int 		major_votes;
 	int			i;
 	int			j;
@@ -32,14 +32,7 @@ int main(int argc, char **argv)
 		ft_printf("Usage: %s [candidates...]\n", argv[0]);
 		return (1);
 	}
-
-	tot_candidates = argc - 1;
-	if (tot_candidates > MAX)
-	{
-		ft_printf("Too many candidates, max is %d\n", MAX);
-		exit(1);
-	}
-
+	set_total_candidates(&tot_candidates, argc);
 	get_voters();
 	init_ballots(ballot, voters, tot_candidates);
 	init_candidates(argv, candidates, tot_candidates);
@@ -69,6 +62,16 @@ int main(int argc, char **argv)
 
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+
+void	set_total_candidates(int *tot_candidates, int argc)
+{
+	*tot_candidates = argc - 1;
+	if (*tot_candidates > MAX)
+	{
+		ft_printf("Too many candidates, max is %d\n", MAX);
+		exit(1);
+	}
+}
 
 int	get_voters(void)
 {
