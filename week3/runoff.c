@@ -12,7 +12,7 @@ typedef struct candidate
 // int		check_winner(int major_votes, int tot_candidates, candidate *candidates);
 
 void	free_ballots(int **ballot, int voters);
-void	init_ballots(int **ballot, int voters, int tot_candidates);
+void	init_ballots(int **ballot, int voters);
 void	init_candidates(char **argv, candidate *candidates, int tot_candidates);
 int		get_voters(void);
 void	set_total_candidates(int *tot_candidates, int argc);
@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	// count majority (instant win)
 	major_votes = (voters / 2) + 1;
 
-	// vote(voters, tot_candidates, candidates);
+	vote(ballot, voters, tot_candidates, candidates);
 
 	// while (!(check_winner(major_votes, tot_candidates, candidates)))
 	// {
@@ -62,6 +62,26 @@ int main(int argc, char **argv)
 
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+
+
+void	vote(int **ballot, int voters, int tot_candidates, candidate *candidates)
+{
+	int		i;
+	char	*input;
+
+	i = 0;
+	while (i < voters)
+	{
+		ft_printf("Rank %d: ", i + 1);
+		get_next_line(0, &input);
+		if (input)
+		{
+
+			ft_strdel(&input);
+		}
+
+	}
+}
 
 void	set_total_candidates(int *tot_candidates, int argc)
 {
@@ -234,7 +254,7 @@ void	free_ballots(int **ballot, int voters)
 	ballot[0][0] = 2		==		first voters first choice is candidate[2].name
 	ballot[0][1] = 3		==		first voters second choice is candidate[3].name
 */
-void	init_ballots(int **ballot, int voters, int tot_candidates)
+void	init_ballots(int **ballot, int voters)
 {
 	int	i;
 	int	j;
@@ -249,14 +269,14 @@ void	init_ballots(int **ballot, int voters, int tot_candidates)
 	i = 0;
 	while (i < voters)
 	{
-		ballot[i] = (int *) malloc(sizeof(int) * tot_candidates);
+		ballot[i] = (int *) malloc(sizeof(int) * 3);
 		if (!ballot[i])
 		{
 			ft_printf("Error in init_ballots int* malloc!\n");
 			exit(3);
 		}
 		j = 0;
-		while (j < tot_candidates)
+		while (j < 3)
 		{
 			ballot[i][j] = -1;		// initialize to -1, 0 is a position
 			j++;
