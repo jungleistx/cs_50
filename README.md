@@ -21,6 +21,8 @@ https://github.com/jungleistx/libft
 	gcc week2/caesar.c libft.a && ./a.out key </br>
 	gcc week2/substitution.c libft.a && ./a.out VCHPRZGJNTLSKFBDQWAXEUYMOI </br>
 	chmod u+x week2/wordle/wordle.sh && ./week2/wordle/wordle.sh [wordsize] </br>
+- Week 3 </br>
+	gcc week3/plurality.c libft.a && ./a.out [candidate names...] </br>
 
 NOTE: I didnt have access to the starting materials or the cs50-library, </br>
 so some of my implementations might be different from the originals. </br>
