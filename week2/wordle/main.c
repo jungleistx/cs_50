@@ -14,6 +14,7 @@ void	init_helper(int *misses, int **hits, char **helper, int **yellow, int len);
 void	init_filename(char *filename, int len);
 void	helper_prompt(char **answer, int *suggestions);
 
+void	enter_guess(int guess, int len, char *filename, char **input);
 int		validate_input(char *input);
 int		char_found(char c, char *str);
 int		word_found(char *str, char *filename);
@@ -29,10 +30,10 @@ int main(int argc, char **argv)
 	char	word[10];		// answer
 	int		word_length;	// answer & guess -length
 	int		guesses;		// 0-5
-	char	*input;			// user-typed guess
 	int		found;			// guess == answer
 	int		i;
 	int		j;
+	char	*input;			// entered guess
 	int		misses[26];		// 0/1 for every letter, indicates missed (red) letters
 	int		help_counter;
 	int		total_possib;	// total possibilities of answers
@@ -58,42 +59,22 @@ int main(int argc, char **argv)
 
 	welcome_msg(word_length);
 	helper_prompt(&suggestion_prompt, &suggestions);	// activate suggestions
-	if (suggestions)									// optimization, dont allocate unnecessary suggestions
-		init_helper(misses, hits, helper, yellow, word_length);		// allocate arrays & init to 0
+	init_helper(misses, hits, helper, yellow, word_length);		// allocate arrays & init to 0
 	init_filename(filename, word_length);			// read different wordlists based on wordlength
 
 	guesses = 0;
 	found = 0;
 	while (guesses < 6)
 	{
-		// loop until valid guess given
-		while (1)
-		{
-			ft_printf("Enter %d. guess: ", guesses + 1);
-			get_next_line(0, &input);
-			if (input)
-			{
-				if (ft_strlen(input) == word_length && validate_input(input))	// all lowercase correct length input
-				{
-					if (word_found(input, filename))		// input found in wordlist
-						break ;
-					else
-						print_invalid_word(input);
-				}
-				else
-					print_guess_instruction(word_length);
-				ft_strdel(&input);
-			}
-		}
+		enter_guess(guesses, word_length, filename, &input);
 
-		// print matched letters and update the g/y/r arrays
 		i = 0;
-		while (i < word_length)						// V2 NOTE: yellows might be false-positive
+		while (i < word_length)			// print matched letters and update the g/y/r arrays
 		{
 			if (input[i] == word[i])
 				print_green(input[i], i, hits);
 			else if (char_found(input[i], word))
-				print_yellow(input[i], i, yellow);
+				print_yellow(input[i], i, yellow);	// V2 NOTE: yellows might be false-positive
 			else
 				print_red(input[i], misses);
 			i++;
@@ -109,11 +90,8 @@ int main(int argc, char **argv)
 			break ;
 		else if (guesses < 6 && suggestions) 		// suggestions turned on
 			print_suggestions(filename, word_length, hits, yellow, misses, helper);
-
-	}		// end of guesses
-
+	}
 	print_result(word, guesses, found);
-
 	free_helpers(hits, yellow, word_length);
 	return (0);
 }
@@ -123,6 +101,28 @@ int main(int argc, char **argv)
 // 	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 // 	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 // 	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+
+void	enter_guess(int guess, int len, char *filename, char **input)
+{
+	while (1)	// loop until valid guess given
+	{
+		ft_printf("Enter %d. guess: ", guess + 1);
+		get_next_line(0, input);
+		if (*input)
+		{
+			if (ft_strlen(*input) == len && validate_input(*input))	// all lowercase correct length input
+			{
+				if (word_found(*input, filename))		// input found in wordlist
+					return ;
+				else
+					print_invalid_word(*input);
+			}
+			else
+				print_guess_instruction(len);
+			ft_strdel(input);
+		}
+	}
+}
 
 void	print_suggestions(char *filename, int len, int **hits, int **yel, int *miss, char **helper)
 {
@@ -174,7 +174,7 @@ void	print_result(char *word, int guesses, int found)
 {
 	if (found)
 	{
-		ft_printf(GREEN"\nWINNER");
+		ft_printf(GREEN"\n\nWINNER");
 		if (guesses < 6)
 		{
 			if (guesses == 1)
