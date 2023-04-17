@@ -8,9 +8,9 @@ typedef struct candidate
 	int		eliminated;
 }			candidate;
 
-// void	vote(int voters, int tot_candidates, candidate *candidates);
 // int		check_winner(int major_votes, int tot_candidates, candidate *candidates);
 
+void	vote(int **ballot, int voters, int tot_candidates, candidate *candidates);
 void	free_ballots(int **ballot, int voters);
 void	init_ballots(int **ballot, int voters);
 void	init_candidates(char **argv, candidate *candidates, int tot_candidates);
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 	}
 	set_total_candidates(&tot_candidates, argc);
 	get_voters();
-	init_ballots(ballot, voters, tot_candidates);
+	init_ballots(ballot, voters);
 	init_candidates(argv, candidates, tot_candidates);
 
 	// count majority (instant win)
@@ -67,19 +67,37 @@ int main(int argc, char **argv)
 void	vote(int **ballot, int voters, int tot_candidates, candidate *candidates)
 {
 	int		i;
+	int		j;
+	int		k;
 	char	*input;
 
 	i = 0;
 	while (i < voters)
 	{
-		ft_printf("Rank %d: ", i + 1);
-		get_next_line(0, &input);
-		if (input)
+		// all voters have 3 votes
+		j = 0;
+		while (j < 3)
 		{
-
-			ft_strdel(&input);
+			ft_printf("Rank %d: ", j + 1);
+			get_next_line(0, &input);
+			if (input)
+			{
+				k = 0;
+				while (k < tot_candidates)
+				{
+					if (ft_strequ(input, candidates[k].name))
+					{
+						ballot[i][j] = k;	// ballot[0][0] = 3 	==	 first voters first vote is candidate[3]
+						break ;
+					}
+					k++;
+				}
+				ft_strdel(&input);
+			}
+			j++;
 		}
-
+		ft_printf("\n");
+		i++;
 	}
 }
 
@@ -111,44 +129,6 @@ int	get_voters(void)
 	}
 	return (voters);
 }
-
-// void	vote(int voters, int tot_candidates, candidate *candidates)
-// {
-// 	int		i;
-// 	int		j;
-// 	int		k;
-// 	char	*input;
-
-// 	i = 0;
-// 	while (i < voters)
-// 	{
-// 		// all vote 3 times
-// 		j = 0;
-// 		while (j < 3)
-// 		{
-// 			ft_printf("Rank %d: ", j + 1);
-// 			get_next_line(0, &input);
-// 			if (input)
-// 			{
-// 				k = 0;
-// 				while (k < tot_candidates)
-// 				{
-// 					if (ft_strequ(candidates[k].name, input))
-// 					{
-// 						// add vote to candidates jth-preference index
-// 						(candidates[k]).votes[j]++;
-// 						break ;
-// 					}
-// 					k++;
-// 				}
-// 				ft_strdel(&input);
-// 			}
-// 			j++;
-// 		}
-// 		ft_printf("\n");
-// 		i++;
-// 	}
-// }
 
 void	free_candidates(candidate *candidates, int tot_candidates)
 {
