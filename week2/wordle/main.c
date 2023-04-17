@@ -56,11 +56,11 @@ int main(int argc, char **argv)
 	int		*hits[word_length];			// for every position, every letter possibility
 	int		*yellow[word_length];		// letters that are in answer but in wrong position
 
+	welcome_msg(word_length);
 	helper_prompt(&suggestion_prompt, &suggestions);	// activate suggestions
 	if (suggestions)									// optimization, dont allocate unnecessary suggestions
 		init_helper(misses, hits, helper, yellow, word_length);		// allocate arrays & init to 0
 	init_filename(filename, word_length);			// read different wordlists based on wordlength
-	welcome_msg(word_length);
 
 	guesses = 0;
 	found = 0;
