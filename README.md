@@ -16,6 +16,7 @@ https://github.com/jungleistx/libft
 	gcc week1/cash.c libft.a && ./a.out </br>
 - Week 2 </br>
 	gcc week2/scrabble.c libft.a && ./a.out </br>
+	gcc week2/readability.c libft.a && ./a.out </br>
 	gcc week2/bulbs.c libft.a && ./a.out </br>
 	gcc week2/caesar.c libft.a && ./a.out key </br>
 	gcc week2/substitution.c libft.a && ./a.out VCHPRZGJNTLSKFBDQWAXEUYMOI </br>
