@@ -7,6 +7,7 @@ void	print_result(char *word, int guesses, int found);
 void	print_invalid_word(char *str);
 void	print_guess_instruction(int len);
 void	print_helpers(char **helper, int lines, int len);
+void	print_suggestions(char *filename, int len, int **hits, int **yel, int *miss, char **helper);
 
 void	welcome_msg(int len);
 void	init_helper(int *misses, int **hits, char **helper, int **yellow, int len);
@@ -32,12 +33,10 @@ int main(int argc, char **argv)
 	int		found;			// guess == answer
 	int		i;
 	int		j;
-	char 	buf[9];			// buffer for reading single line when creating suggestions
 	int		misses[26];		// 0/1 for every letter, indicates missed (red) letters
 	int		help_counter;
 	int		total_possib;	// total possibilities of answers
 	char 	*helper[5];		// suggestions based on previous guesses
-
 	int		suggestions;
 	char	*suggestion_prompt;
 	char	filename[34];		// wordlist filename
@@ -98,54 +97,18 @@ int main(int argc, char **argv)
 				print_red(input[i], misses);
 			i++;
 		}
+		ft_printf("\n");
 
 		guesses++;
-		ft_printf("\n");
 		if (ft_strequ(input, word))
 			found = 1;
 		ft_strdel(&input);
+
 		if (found)
 			break ;
-		else if (guesses < 6 && suggestions) // suggestions turned on
-		{
-			int fd_helper = open(filename, O_RDONLY);		// open for reading words for helper
-			if (fd_helper == -1)
-			{
-				ft_printf("ERROR opening %s in suggestions\n", filename);
-				exit(4);
-			}
-			help_counter = 0;
-			total_possib = 0;
+		else if (guesses < 6 && suggestions) 		// suggestions turned on
+			print_suggestions(filename, word_length, hits, yellow, misses, helper);
 
-			int read_amount;
-			if (word_length == 5)						// not sure why it reads differently with len 5
-				read_amount = word_length + 2;			// maybe newline in different position in files?
-			else
-				read_amount = word_length + 1;
-
-			while (read(fd_helper, &buf, read_amount) > 0)	// read wordlist line-by-line, skip newlines
-			{
-				buf[word_length] = '\0';
-				if (check_green_help(buf, hits, word_length))		// 'greens' match the word
-				{
-					if (check_red_help(buf, misses))			// no 'reds' in the word
-					{
-						if (check_yellow_help(buf, yellow, word_length))	// word contains all 'yellows'
-						{
-							if (help_counter < 5)				// add to suggestions
-							{
-								helper[help_counter] = ft_strdup(buf);
-								help_counter++;
-							}
-							total_possib++;		// even if suggestions == 5, count all the possible answers
-						}
-					}
-				}
-			}
-			close(fd_helper);
-			print_helpers(helper, total_possib, word_length);
-			free_suggestions(helper);
-		}	// end of helper
 	}		// end of guesses
 
 	print_result(word, guesses, found);
@@ -159,6 +122,52 @@ int main(int argc, char **argv)
 // 	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 // 	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 // 	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+
+void	print_suggestions(char *filename, int len, int **hits, int **yel, int *miss, char **helper)
+{
+	int		fd_helper;		// open for reading words for helper
+	int		suggestions;
+	int		total_possib;	// all possible answers
+	int		read_amount;	// linelength in file
+	char	buf[9];			// buffer for reading single line from file
+
+	fd_helper = open(filename, O_RDONLY);
+	if (fd_helper == -1)
+	{
+		ft_printf("ERROR opening %s in print_suggestions\n", filename);
+		exit(4);
+	}
+	if (len == 5)						// not sure why it reads differently with len 5
+		read_amount = len + 2;			// maybe newline in different position in files?
+	else
+		read_amount = len + 1;
+
+	suggestions = 0;
+	total_possib = 0;
+
+	while (read(fd_helper, &buf, read_amount) > 0)	// read wordlist line-by-line, skip newlines
+	{
+		buf[len] = '\0';
+		if (check_green_help(buf, hits, len))		// 'greens' match the word
+		{
+			if (check_red_help(buf, miss))			// no 'reds' in the word
+			{
+				if (check_yellow_help(buf, yel, len))	// word contains all 'yellows'
+				{
+					if (suggestions < 5)				// add to suggestions
+					{
+						helper[suggestions] = ft_strdup(buf);
+						suggestions++;
+					}
+					total_possib++;		// even if suggestions == 5, count all the possible answers
+				}
+			}
+		}
+	}
+	close(fd_helper);
+	print_helpers(helper, total_possib, len);
+	free_suggestions(helper);
+}
 
 void	print_result(char *word, int guesses, int found)
 {
