@@ -13,6 +13,7 @@ typedef struct candidate
 
 void	free_ballots(int **ballot, int voters);
 void	init_ballots(int **ballot, int voters, int tot_candidates);
+void	init_candidates(char **argv, candidate *candidates, int tot_candidates);
 
 int main(int argc, char **argv)
 {
@@ -51,17 +52,7 @@ int main(int argc, char **argv)
 	}
 
 	init_ballots(ballot, voters, tot_candidates);
-
-
-	// copy candidate names, set votes to 0
-	i = 0;
-	while (i < tot_candidates)
-	{
-		candidates[i].name = ft_strdup(argv[i + 1]);
-		candidates[i].votes = 0;
-		candidates[i].eliminated = 0;
-		i++;
-	}
+	init_candidates(argv, candidates, tot_candidates);
 
 	// count majority (instant win)
 	major_votes = (voters / 2) + 1;
@@ -73,7 +64,8 @@ int main(int argc, char **argv)
 	// 	delete_last_candidate(candidates, tot_candidates);
 	// }
 
-	free_ballots(&ballot);
+	free_ballots(ballot, voters);
+	free_candidates(candidates, tot_candidates);
 	return (0);
 }
 
@@ -88,52 +80,29 @@ int main(int argc, char **argv)
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 
-void	free_ballots(int **ballot, int voters)
+void	free_candidates(candidate *candidates, int tot_candidates)
 {
 	int	i;
 
 	i = 0;
-	while (i < voters)
+	while (i < tot_candidates)
 	{
-		free(ballot[i]);
+		ft_strdel(&(candidates[i].name));
 		i++;
 	}
-	free(ballot);
-
 }
 
-/*
-	every voters preferred candidate's index saved in order
-	ballot[0][0] = 2		==		first voters first choice is candidate[2].name
-	ballot[0][1] = 3		==		first voters second choice is candidate[3].name
-*/
-void	init_ballots(int **ballot, int voters, int tot_candidates)
+// copy candidate names, set votes to 0
+void	init_candidates(char **argv, candidate *candidates, int tot_candidates)
 {
 	int	i;
-	int	j;
-
-	ballot = (int **) malloc(sizeof(int *) * voters);
-	if (!ballot)
-	{
-		ft_printf("Error in init_ballots int** malloc!\n");
-		exit(2);
-	}
 
 	i = 0;
-	while (i < voters)
+	while (i < tot_candidates)
 	{
-		ballot[i] = (int *) malloc(sizeof(int) * tot_candidates);
-		if (!ballot[i])
-		{
-			ft_printf("Error in init_ballots int* malloc!\n");
-			exit(3);
-		}
-		j = 0;
-		while (j < tot_candidates)
-		{
-			ballot[i][j] = -1;
-			j++;
-		}
+		candidates[i].name = ft_strdup(argv[i + 1]);
+		candidates[i].votes = 0;
+		candidates[i].eliminated = 0;
 		i++;
 	}
 }
@@ -233,3 +202,52 @@ void	init_ballots(int **ballot, int voters, int tot_candidates)
 // 	}
 // 	return (0);
 // }
+
+void	free_ballots(int **ballot, int voters)
+{
+	int	i;
+
+	i = 0;
+	while (i < voters)
+	{
+		free(ballot[i]);
+		i++;
+	}
+	free(ballot);
+}
+
+/*
+	every voters preferred candidate's index saved in order:
+	ballot[0][0] = 2		==		first voters first choice is candidate[2].name
+	ballot[0][1] = 3		==		first voters second choice is candidate[3].name
+*/
+void	init_ballots(int **ballot, int voters, int tot_candidates)
+{
+	int	i;
+	int	j;
+
+	ballot = (int **) malloc(sizeof(int *) * voters);
+	if (!ballot)
+	{
+		ft_printf("Error in init_ballots int** malloc!\n");
+		exit(2);
+	}
+
+	i = 0;
+	while (i < voters)
+	{
+		ballot[i] = (int *) malloc(sizeof(int) * tot_candidates);
+		if (!ballot[i])
+		{
+			ft_printf("Error in init_ballots int* malloc!\n");
+			exit(3);
+		}
+		j = 0;
+		while (j < tot_candidates)
+		{
+			ballot[i][j] = -1;		// initialize to -1, 0 is a position
+			j++;
+		}
+		i++;
+	}
+}
