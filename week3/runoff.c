@@ -46,9 +46,9 @@ int main(int argc, char **argv)
 
 	while (!(check_winner(major_votes, tot_candidates, candidates)))
 	{
-		remove_last_candidate(candidates, tot_candidates, ballot);
+		remove_last_candidate(candidates, tot_candidates, ballot, voters);
 
-		// check_only_candidate
+		check_solo_candidate(candidates, tot_candidates);
 	}
 
 	free_ballots(ballot, voters);
@@ -66,6 +66,35 @@ int main(int argc, char **argv)
 
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+
+// only 1 left, but might not have > 50% of votes. To avoid infinite loop
+void	check_solo_candidate(candidate *candidates, int tot_candidates)
+{
+	int	i;
+	int	candidates_left;
+
+	candidates_left = 0;
+	i = 0;
+	while (i < tot_candidates)
+	{
+		if (candidates[i].eliminated == 0)
+			candidates_left++;
+		i++;
+	}
+	if (candidates_left == 1)
+	{
+		i = 0;
+		while (i < tot_candidates)
+		{
+			if (candidates[i].eliminated == 0)
+			{
+				candidates[i].votes = tot_candidates;
+				return ;
+			}
+			i++;
+		}
+	}
+}
 
 void	count_first_votes(int **ballot, int voters, candidate *candidates)
 {
@@ -221,10 +250,10 @@ void	cast_removed_votes(candidate *candidates, int pos, int tot_candidates, int 
 		j = 0;
 		while (j < 3)	// look for votes for the removed candidates[pos] as first/first remaining vote
 		{
-			cur_pos = ballot[i][j];
+			cur_pos = ballot[i][j];				// save the current vote
 			if (cur_pos != pos && candidates[cur_pos].eliminated == 0)		// voter has other preference
 				break ;
-			else if (cur_pos == pos)
+			else if (cur_pos == pos)			// vote for the removed candidate
 			{
 				j++;
 				while (j < 3)
@@ -263,7 +292,7 @@ void	remove_last_candidate(candidate *candidates, int tot_candidates, int **ball
 	i = 0;
 	while (i < tot_candidates)
 	{
-		if (candidates[i].votes == min)
+		if ((candidates[i].votes == min) && (candidates[i].eliminated == 0))
 		{
 			candidates[i].eliminated = 1;
 			cast_removed_votes(candidates, i, tot_candidates, min, ballot, voters);
