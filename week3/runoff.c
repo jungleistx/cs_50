@@ -44,7 +44,8 @@ int main(int argc, char **argv)
 
 	while (!(check_winner(major_votes, tot_candidates, candidates)))
 	{
-		// delete_last_candidate(candidates, tot_candidates);
+		remove_last_candidate(candidates, tot_candidates);
+		// check_only_candidate
 	}
 
 	free_ballots(ballot, voters);
@@ -189,30 +190,65 @@ void	init_candidates(char **argv, candidate *candidates, int tot_candidates)
 
 // }
 
-// void	delete_last_candidate(candidate *candidates, int tot_candidates)
-// {
-// 	int	i;
-// 	int	j;
-// 	int	min;
+void	check_droput_tie(candidate *candidates, int min, int tot_candidates)
+{
+	int	i;
+	int	dropouts;
+	int	survivors;
 
-// 	i = 0;
-// 	j = 0;
-// 	min = tot_candidates;
-// 	while (i < tot_candidates)
-// 	{
-// 		if (min > candidates[i].votes[j])
-// 			min = candidates[i].votes[j];
-// 		i++;
-// 	}
-// 	i = 0;
-// 	while (i < tot_candidates)
-// 	{
-// 		if (candidates[i])
-// 		i++;
-// 	}
+	i = 0;
+	dropouts = 0;
+	survivors = 0;
+	while (i < tot_candidates)
+	{
+		if (candidates[i].votes == min)		// count dropouts
+			dropouts++;
+		if (candidates[i].eliminated == 0)	// count candidates left
+			survivors++;
+		i++;
+	}
+	if ((survivors - dropouts) < 1)		// all remaining candidates would be removed, tie
+	{
+		ft_printf("\n");
+		i = 0;
+		while (i < tot_candidates)
+		{
+			if (candidates[i].eliminated == 0)
+				ft_printf("%s\n", candidates[i].name);
+			i++;
+		}
+		exit(0);			// tie
+	}
+}
 
+// void	revote_removed_candidate(candidate *candidates, int pos, int tot_candidates);
 
-// }
+void	remove_last_candidate(candidate *candidates, int tot_candidates)
+{
+	int	i;
+	int	min;
+	int	eliminated;
+
+	i = 0;
+	min = tot_candidates;
+	while (i < tot_candidates)		// find the least amount of votes from remaining candidates
+	{
+		if (min > candidates[i].votes && candidates[i].eliminated == 0)
+			min = candidates[i].votes;
+		i++;
+	}
+	check_droput_tie(candidates, min, tot_candidates);
+	i = 0;
+	while (i < tot_candidates)
+	{
+		if (candidates[i].votes == min)
+		{
+			candidates[i].eliminated = 1;
+			// revote
+		}
+		i++;
+	}
+}
 
 
 int	check_winner(int major_votes, int tot_candidates, candidate *candidates)
