@@ -16,6 +16,8 @@ void	init_candidates(char **argv, candidate *candidates, int tot_candidates);
 int		get_voters(void);
 void	set_total_candidates(int *tot_candidates, int argc);
 void	count_first_votes(int **ballot, int voters, candidate *candidates);
+void	remove_last_candidate(candidate *candidates, int tot_candidates, int **ballot, int voters);
+void	check_droput_tie(candidate *candidates, int min, int tot_candidates);
 
 int main(int argc, char **argv)
 {
@@ -44,7 +46,8 @@ int main(int argc, char **argv)
 
 	while (!(check_winner(major_votes, tot_candidates, candidates)))
 	{
-		remove_last_candidate(candidates, tot_candidates);
+		remove_last_candidate(candidates, tot_candidates, ballot);
+
 		// check_only_candidate
 	}
 
@@ -174,22 +177,6 @@ void	init_candidates(char **argv, candidate *candidates, int tot_candidates)
 	}
 }
 
-// int	check_tied_votes(int min, int pos, int tot_candidates, candidate *candidates)
-// {
-// 	int	i;
-// 	int	last;
-
-// 	i = 0;
-// 	last = 0;
-// 	while (i < tot_candidates)
-// 	{
-// 		if (candidates[i].votes[0] == min)
-// 			last++;
-// 		i++;
-// 	}
-
-// }
-
 void	check_droput_tie(candidate *candidates, int min, int tot_candidates)
 {
 	int	i;
@@ -221,9 +208,44 @@ void	check_droput_tie(candidate *candidates, int min, int tot_candidates)
 	}
 }
 
-// void	revote_removed_candidate(candidate *candidates, int pos, int tot_candidates);
+// cast votes for remaining candidates if there is a highest preference for the removed candidate
+void	cast_removed_votes(candidate *candidates, int pos, int tot_candidates, int min, int **ballot, int voters)
+{
+	int	i;
+	int	j;
+	int	cur_pos;
 
-void	remove_last_candidate(candidate *candidates, int tot_candidates)
+	i = 0;
+	while (i < voters)
+	{
+		j = 0;
+		while (j < 3)	// look for votes for the removed candidates[pos] as first/first remaining vote
+		{
+			cur_pos = ballot[i][j];
+			if (cur_pos != pos && candidates[cur_pos].eliminated == 0)		// voter has other preference
+				break ;
+			else if (cur_pos == pos)
+			{
+				j++;
+				while (j < 3)
+				{
+					cur_pos = ballot[i][j];
+					// next remaining candidate who is not being removed
+					if ((candidates[cur_pos].eliminated == 0) && (candidates[cur_pos].votes > min))
+					{
+						candidates[cur_pos].votes++;
+						break ;
+					}
+					j++;
+				}
+			}
+			j++;
+		}
+		i++;
+	}
+}
+
+void	remove_last_candidate(candidate *candidates, int tot_candidates, int **ballot, int voters)
 {
 	int	i;
 	int	min;
@@ -244,7 +266,7 @@ void	remove_last_candidate(candidate *candidates, int tot_candidates)
 		if (candidates[i].votes == min)
 		{
 			candidates[i].eliminated = 1;
-			// revote
+			cast_removed_votes(candidates, i, tot_candidates, min, ballot, voters);
 		}
 		i++;
 	}
