@@ -25,6 +25,6 @@ https://github.com/jungleistx/libft
 	gcc week3/plurality.c libft.a && ./a.out [candidate names...] </br>
 	gcc week3/runoff.c libft.a && ./a.out [candidate names...] </br>
 
-NOTE: I didnt have access to the starting materials or the cs50-library, </br>
+NOTE: I didnt use the starting materials or the cs50-library, </br>
 so some of my implementations might be different from the originals. </br>
 Output of the program(s) should be matching.
