@@ -8,10 +8,12 @@ typedef struct candidate
 	int		eliminated;
 }			candidate;
 
+void	check_solo_candidate(candidate *candidates, int tot_candidates, int major_votes);
+void	free_candidates(candidate *candidates, int tot_candidates);
 int		check_winner(int major_votes, int tot_candidates, candidate *candidates);
 void	vote(int **ballot, int voters, int tot_candidates, candidate *candidates);
 void	free_ballots(int **ballot, int voters);
-void	init_ballots(int **ballot, int voters);
+void	init_ballots(int ***ballot, int voters);
 void	init_candidates(char **argv, candidate *candidates, int tot_candidates);
 int		get_voters(void);
 void	set_total_candidates(int *tot_candidates, int argc);
@@ -35,40 +37,26 @@ int main(int argc, char **argv)
 		return (1);
 	}
 	set_total_candidates(&tot_candidates, argc);
-	get_voters();
-	init_ballots(ballot, voters);
+	voters = get_voters();
+	init_ballots(&ballot, voters);
 	init_candidates(argv, candidates, tot_candidates);
 
 	major_votes = (voters / 2) + 1;		// votes needed for win
 
 	vote(ballot, voters, tot_candidates, candidates);
 	count_first_votes(ballot, voters, candidates);
-
 	while (!(check_winner(major_votes, tot_candidates, candidates)))
 	{
 		remove_last_candidate(candidates, tot_candidates, ballot, voters);
-
-		check_solo_candidate(candidates, tot_candidates);
+		check_solo_candidate(candidates, tot_candidates, major_votes);
 	}
-
 	free_ballots(ballot, voters);
 	free_candidates(candidates, tot_candidates);
 	return (0);
 }
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-
-/*
-	functions:
-		delete_last_candidate()
-*/
-
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-
-// only 1 left, but might not have > 50% of votes. To avoid infinite loop
-void	check_solo_candidate(candidate *candidates, int tot_candidates)
+// only 1 candidate left, but might not have majority of votes. To avoid infinite loop
+void	check_solo_candidate(candidate *candidates, int tot_candidates, int major_votes)
 {
 	int	i;
 	int	candidates_left;
@@ -88,7 +76,7 @@ void	check_solo_candidate(candidate *candidates, int tot_candidates)
 		{
 			if (candidates[i].eliminated == 0)
 			{
-				candidates[i].votes = tot_candidates;
+				candidates[i].votes = major_votes;
 				return ;
 			}
 			i++;
@@ -134,10 +122,13 @@ void	vote(int **ballot, int voters, int tot_candidates, candidate *candidates)
 				k = 0;
 				while (k < tot_candidates)
 				{
-					if (ft_strequ(input, candidates[k].name))
+					if (candidates[i].name)
 					{
-						ballot[i][j] = k;	// ballot[0][0] = 3 	==	 first voters first vote is candidate[3]
-						break ;
+						if (ft_strequ(input, candidates[k].name))
+						{
+							ballot[i][j] = k;	// ballot[0][0] = 3 	==	 first voters first vote is candidate[3]
+							break ;
+						}
 					}
 					k++;
 				}
@@ -337,13 +328,13 @@ void	free_ballots(int **ballot, int voters)
 	ballot[0][0] = 2		==		first voters first choice is candidate[2].name
 	ballot[0][1] = 3		==		first voters second choice is candidate[3].name
 */
-void	init_ballots(int **ballot, int voters)
+void	init_ballots(int ***ballot, int voters)
 {
 	int	i;
 	int	j;
 
-	ballot = (int **) malloc(sizeof(int *) * voters);
-	if (!ballot)
+	*ballot = (int **) malloc(sizeof(int *) * voters);
+	if (!(*ballot))
 	{
 		ft_printf("Error in init_ballots int** malloc!\n");
 		exit(2);
@@ -352,8 +343,8 @@ void	init_ballots(int **ballot, int voters)
 	i = 0;
 	while (i < voters)
 	{
-		ballot[i] = (int *) malloc(sizeof(int) * 3);
-		if (!ballot[i])
+		(*ballot)[i] = (int *) malloc(sizeof(int) * 3);
+		if (!((*ballot)[i]))
 		{
 			ft_printf("Error in init_ballots int* malloc!\n");
 			exit(3);
@@ -361,7 +352,7 @@ void	init_ballots(int **ballot, int voters)
 		j = 0;
 		while (j < 3)
 		{
-			ballot[i][j] = -1;		// initialize to -1, 0 is a position
+			(*ballot)[i][j] = -1;		// initialize to -1, 0 is a position
 			j++;
 		}
 		i++;

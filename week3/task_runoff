@@ -169,3 +169,12 @@ Complete the eliminate function.
 
 The function takes an argument min, which will be the minimum number of votes that anyone in the election currently has.
 The function should eliminate the candidate (or candidates) who have min number of votes.
+
+Testing
+Be sure to test your code to make sure it handles…
+
+An election with any number of candidate (up to the MAX of 9)
+Voting for a candidate by name
+Invalid votes for candidates who are not on the ballot
+Printing the winner of the election if there is only one
+Not eliminating anyone in the case of a tie between all remaining candidates
