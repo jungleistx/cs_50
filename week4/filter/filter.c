@@ -11,6 +11,8 @@ int		get_filter_choice(void);
 int		get_new_filefd(int filter_choice);
 void	copy_bmp_header(int original_bmp, int new_bmp);
 void	filter(int original_fd, int filter_choice);
+void	get_file_info(BITMAPFILEHEADER *b_fileheader, BITMAPINFOHEADER *b_info, int original_fd);
+void	check_file_validity(BITMAPFILEHEADER bf, BITMAPINFOHEADER bi, int in_fd);
 
 void	grayscale(int original_fd, int new_fd);
 void	sepia(int original_fd, int new_fd);
@@ -47,8 +49,21 @@ int	main(int argc, char **argv)
 	}
 
 	get_file_info(&b_fileheader, &b_info, original_bmp_fd);
+	check_file_validity(b_fileheader, b_info, original_bmp_fd);
+
 	filter_choice = get_filter_choice();
 	filter(original_bmp_fd, filter_choice);
+}
+
+void	check_file_validity(BITMAPFILEHEADER bf, BITMAPINFOHEADER bi, int in_fd)
+{
+	if (bf.bfType != 0x4d42 || bf.bfOffBits != 54 || bi.biSize != 40 ||
+		bi.biBitCount != 24 || bi.biCompression != 0)
+	{
+		close(in_fd);
+		ft_printf("Unsupported file format.\n");
+		exit (2);
+	}
 }
 
 void	get_file_info(BITMAPFILEHEADER *b_fileheader, BITMAPINFOHEADER *b_info, int original_fd)
