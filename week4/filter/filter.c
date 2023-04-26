@@ -37,6 +37,7 @@ int	main(int argc, char **argv)
 	BITMAPINFOHEADER	b_info;
 	int					height;
 	int					width;
+	RGBTRIPLE			**image;
 
 	if (argc != 2)
 	{
@@ -54,9 +55,48 @@ int	main(int argc, char **argv)
 	get_file_info(&b_fileheader, &b_info, original_bmp_fd);
 	check_file_validity(b_fileheader, b_info, original_bmp_fd);
 	get_file_size(&height, &width, b_info);
-
 	filter_choice = get_filter_choice();
+
+	allocate_new_image(image, height, width);
+
 	filter(original_bmp_fd, filter_choice);
+}
+
+void	allocage_new_image(RGBTRIPLE **image, int height, int width)
+{
+	int	i;
+
+	image = (RGBTRIPLE**) malloc(sizeof(RGBTRIPLE*) * height);
+	if (!image)
+	{
+		ft_printf("ERROR malloc RGB** in new image.\n");
+		exit(3);
+	}
+
+	i = 0;
+	while (i < height)
+	{
+		image[i] = (RGBTRIPLE*) malloc(sizeof(RGBTRIPLE) * width);
+		if (!(image[i]))
+		{
+			ft_printf("ERROR malloc RGB* in new image.\n");
+			exit(4);
+		}
+		i++;
+	}
+}
+
+void	free_new_image(RGBTRIPLE **image, int height)
+{
+	int	i;
+
+	i = 0;
+	while (i < height)
+	{
+		free(image[i]);
+		i++;
+	}
+	free(image);
 }
 
 void	get_file_size(int *height, int width, BITMAPINFOHEADER b_info)
