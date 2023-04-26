@@ -2,6 +2,8 @@
 
 int		get_filter_choice(void);
 int		get_new_filefd(int filter_choice);
+void	copy_bmp_header(int original_bmp, int new_bmp);
+void	filter(int original_fd, int filter_choice);
 
 int	main(int argc, char **argv)
 {
@@ -22,6 +24,23 @@ int	main(int argc, char **argv)
 	}
 
 	filter_choice = get_filter_choice();
+	filter(original_bmp_fd, filter_choice);
+}
+
+void	filter(int original_fd, int filter_choice)
+{
+	int	new_fd;
+
+	new_fd = get_new_filefd(filter_choice);
+	copy_bmp_header(original_fd, new_fd);
+}
+
+void	copy_bmp_header(int original_bmp, int new_bmp)
+{
+	char	buffer[54];		// sizeof 24-bit bmp header
+
+	read(original_bmp, buffer, 54);
+	write(new_bmp, buffer, 54);
 }
 
 int	get_new_filefd(int filter_choice)
