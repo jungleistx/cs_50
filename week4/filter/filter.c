@@ -5,7 +5,7 @@
 #define G 1
 #define B 2
 
-typedef void	(*func_pointer) (int original_fd, int new_fd);
+typedef void	(*func_pointer) (int height, int width, RGBTRIPLE image[height][width]);
 
 int		get_filter_choice(void);
 int		get_new_filefd(int filter_choice);
@@ -14,12 +14,15 @@ void	filter(int original_fd, int filter_choice);
 void	get_file_info(BITMAPFILEHEADER *b_fileheader, BITMAPINFOHEADER *b_info, int original_fd);
 void	check_file_validity(BITMAPFILEHEADER bf, BITMAPINFOHEADER bi, int in_fd);
 void	get_file_size(int *height, int width, BITMAPINFOHEADER b_info);
+void	allocage_new_image(RGBTRIPLE **image, int height, int width);
+void	free_new_image(RGBTRIPLE **image, int height);
+void	read_original_image(RGBTRIPLE **image, int height, int width, int file_fd);
 
-void	grayscale(int original_fd, int new_fd);
-void	sepia(int original_fd, int new_fd);
-void	reflection(int original_fd, int new_fd);
-void	blur(int original_fd, int new_fd);
-void	edges(int original_fd, int new_fd);
+void	grayscale(int height, int width, RGBTRIPLE image[height][width]);
+void	sepia(int height, int width, RGBTRIPLE image[height][width]);
+void	reflection(int height, int width, RGBTRIPLE image[height][width]);
+void	blur(int height, int width, RGBTRIPLE image[height][width]);
+void	edges(int height, int width, RGBTRIPLE image[height][width]);
 
 static const func_pointer	dispatch_table[5] = {
 	grayscale,
@@ -56,10 +59,28 @@ int	main(int argc, char **argv)
 	check_file_validity(b_fileheader, b_info, original_bmp_fd);
 	get_file_size(&height, &width, b_info);
 	filter_choice = get_filter_choice();
-
 	allocate_new_image(image, height, width);
 
-	filter(original_bmp_fd, filter_choice);
+	read_original_image(image, height, width, original_bmp_fd);
+
+	// filter(original_bmp_fd, filter_choice);
+
+	free_new_image(image, height);
+}
+
+void	read_original_image(RGBTRIPLE **image, int height, int width, int file_fd)
+{
+	int	padding;
+	int	i;
+
+	padding = (4 - (width * sizeof(RGBTRIPLE)) % 4) % 4;
+	i = 0;
+	while (i < height)
+	{
+		read(file_fd, image[i], sizeof(RGBTRIPLE) * width);
+		lseek(file_fd, padding, SEEK_CUR);			// skip padding
+		i++;
+	}
 }
 
 void	allocage_new_image(RGBTRIPLE **image, int height, int width)
