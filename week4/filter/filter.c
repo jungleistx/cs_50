@@ -1,6 +1,7 @@
 #include "../../includes/libft.h"
 
 int		get_filter_choice(void);
+int		get_new_filefd(int filter_choice);
 
 int	main(int argc, char **argv)
 {
@@ -21,6 +22,33 @@ int	main(int argc, char **argv)
 	}
 
 	filter_choice = get_filter_choice();
+}
+
+int	get_new_filefd(int filter_choice)
+{
+	char	*filename;
+	int		new_fd;
+
+	new_fd = -1;
+	if (filter_choice == 1)
+		filename = "grayscale.bmp";
+	else if (filter_choice == 2)
+		filename = "sepia.bmp";
+	else if (filter_choice == 3)
+		filename = "reflection.bmp";
+	else if (filter_choice == 4)
+		filename = "blur.bmp";
+	else if (filter_choice == 5)
+		filename = "edges.bmp";
+
+	new_fd = open(filename, O_WRONLY | O_CREAT, 0644);
+	if (new_fd != -1)			// return valid file_fd
+		return (new_fd);
+	else
+	{
+		ft_printf("ERROR opening new file\n");
+		exit(2);
+	}
 }
 
 int	get_filter_choice(void)
