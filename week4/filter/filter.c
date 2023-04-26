@@ -1,9 +1,25 @@
 #include "../../includes/libft.h"
 
+typedef void	(*func_pointer) (int original_fd, int new_fd);
+
 int		get_filter_choice(void);
 int		get_new_filefd(int filter_choice);
 void	copy_bmp_header(int original_bmp, int new_bmp);
 void	filter(int original_fd, int filter_choice);
+
+void	grayscale(int original_fd, int new_fd);
+void	sepia(int original_fd, int new_fd);
+void	reflection(int original_fd, int new_fd);
+void	blur(int original_fd, int new_fd);
+void	edges(int original_fd, int new_fd);
+
+static const func_pointer	dispatch_table[5] = {
+	grayscale,
+	sepia,
+	reflection,
+	blur,
+	edges
+};
 
 int	main(int argc, char **argv)
 {
@@ -33,6 +49,8 @@ void	filter(int original_fd, int filter_choice)
 
 	new_fd = get_new_filefd(filter_choice);
 	copy_bmp_header(original_fd, new_fd);
+
+	dispatch_table[filter_choice - 1](original_fd, new_fd);	// call the correct filter
 }
 
 void	copy_bmp_header(int original_bmp, int new_bmp)
