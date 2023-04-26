@@ -13,6 +13,7 @@ void	copy_bmp_header(int original_bmp, int new_bmp);
 void	filter(int original_fd, int filter_choice);
 void	get_file_info(BITMAPFILEHEADER *b_fileheader, BITMAPINFOHEADER *b_info, int original_fd);
 void	check_file_validity(BITMAPFILEHEADER bf, BITMAPINFOHEADER bi, int in_fd);
+void	get_file_size(int *height, int width, BITMAPINFOHEADER b_info);
 
 void	grayscale(int original_fd, int new_fd);
 void	sepia(int original_fd, int new_fd);
@@ -34,6 +35,8 @@ int	main(int argc, char **argv)
 	int					original_bmp_fd;
 	BITMAPFILEHEADER	b_fileheader;
 	BITMAPINFOHEADER	b_info;
+	int					height;
+	int					width;
 
 	if (argc != 2)
 	{
@@ -50,9 +53,16 @@ int	main(int argc, char **argv)
 
 	get_file_info(&b_fileheader, &b_info, original_bmp_fd);
 	check_file_validity(b_fileheader, b_info, original_bmp_fd);
+	get_file_size(&height, &width, b_info);
 
 	filter_choice = get_filter_choice();
 	filter(original_bmp_fd, filter_choice);
+}
+
+void	get_file_size(int *height, int width, BITMAPINFOHEADER b_info)
+{
+	*height = abs(b_info.biHeight);
+	*width = b_info.biWidth;
 }
 
 void	check_file_validity(BITMAPFILEHEADER bf, BITMAPINFOHEADER bi, int in_fd)
