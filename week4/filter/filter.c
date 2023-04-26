@@ -13,7 +13,7 @@ void	copy_bmp_header(int original_bmp, int new_bmp);
 void	filter(int original_fd, int filter_choice);
 void	get_file_info(BITMAPFILEHEADER *b_fileheader, BITMAPINFOHEADER *b_info, int original_fd);
 void	check_file_validity(BITMAPFILEHEADER bf, BITMAPINFOHEADER bi, int in_fd);
-void	get_file_size(int *height, int width, BITMAPINFOHEADER b_info);
+void	get_file_size(int *height, int *width, BITMAPINFOHEADER b_info);
 void	allocage_new_image(RGBTRIPLE **image, int height, int width);
 void	free_new_image(RGBTRIPLE **image, int height);
 void	read_original_image(RGBTRIPLE **image, int height, int width, int file_fd);
@@ -120,7 +120,7 @@ void	free_new_image(RGBTRIPLE **image, int height)
 	free(image);
 }
 
-void	get_file_size(int *height, int width, BITMAPINFOHEADER b_info)
+void	get_file_size(int *height, int *width, BITMAPINFOHEADER b_info)
 {
 	*height = abs(b_info.biHeight);
 	*width = b_info.biWidth;
