@@ -1,4 +1,9 @@
 #include "../../includes/libft.h"
+#include "bmp.h"
+
+#define R 0
+#define G 1
+#define B 2
 
 typedef void	(*func_pointer) (int original_fd, int new_fd);
 
@@ -23,8 +28,10 @@ static const func_pointer	dispatch_table[5] = {
 
 int	main(int argc, char **argv)
 {
-	int		filter_choice;
-	int		original_bmp_fd;
+	int					filter_choice;
+	int					original_bmp_fd;
+	BITMAPFILEHEADER	b_fileheader;
+	BITMAPINFOHEADER	b_info;
 
 	if (argc != 2)
 	{
@@ -39,8 +46,15 @@ int	main(int argc, char **argv)
 		exit(1);
 	}
 
+	get_file_info(&b_fileheader, &b_info, original_bmp_fd);
 	filter_choice = get_filter_choice();
 	filter(original_bmp_fd, filter_choice);
+}
+
+void	get_file_info(BITMAPFILEHEADER *b_fileheader, BITMAPINFOHEADER *b_info, int original_fd)
+{
+	read(original_fd, b_fileheader, sizeof(BITMAPFILEHEADER));
+	read(original_fd, b_info, sizeof(BITMAPINFOHEADER));
 }
 
 void	filter(int original_fd, int filter_choice)
@@ -112,3 +126,39 @@ int	get_filter_choice(void)
 	}
 	return (filter_choice);
 }
+
+// void	grayscale(int original_fd, int new_fd)
+// {
+// 	int8_t	pixel[3];
+// 	int8_t	average;
+
+// 	while (read(original_fd, pixel, 24) > 0)
+// 	{
+// 		average = (int8_t)((pixel[R] + pixel[G] + pixel[B]) / 3);
+// 		pixel[R] = average;
+// 		pixel[G] = average;
+// 		pixel[B] = average;
+// 		write(new_fd, pixel, 24);
+// 	}
+// }
+
+// void	sepia(int original_fd, int new_fd)
+// {
+// 	(void)original_fd;
+// 	(void)new_fd;
+// }
+// void	reflection(int original_fd, int new_fd)
+// {
+// 	(void)original_fd;
+// 	(void)new_fd;
+// }
+// void	blur(int original_fd, int new_fd)
+// {
+// 	(void)original_fd;
+// 	(void)new_fd;
+// }
+// void	edges(int original_fd, int new_fd)
+// {
+// 	(void)original_fd;
+// 	(void)new_fd;
+// }
