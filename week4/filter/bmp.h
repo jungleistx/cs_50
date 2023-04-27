@@ -13,7 +13,7 @@
  */
 typedef uint8_t  BYTE;
 typedef uint32_t DWORD;
-typedef int32_t  LONG;
+typedef int32_t  LONG_CS;
 typedef uint16_t WORD;
 
 /**
@@ -45,14 +45,14 @@ BITMAPFILEHEADER;
 typedef struct
 {
     DWORD  biSize;
-    LONG   biWidth;
-    LONG   biHeight;
+    LONG_CS   biWidth;
+    LONG_CS   biHeight;
     WORD   biPlanes;
     WORD   biBitCount;
     DWORD  biCompression;
     DWORD  biSizeImage;
-    LONG   biXPelsPerMeter;
-    LONG   biYPelsPerMeter;
+    LONG_CS   biXPelsPerMeter;
+    LONG_CS   biYPelsPerMeter;
     DWORD  biClrUsed;
     DWORD  biClrImportant;
 } __attribute__((__packed__))
