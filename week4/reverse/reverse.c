@@ -68,11 +68,11 @@ int main(int argc, char *argv[])
     // TODO #8
     unsigned char buffer[block_size];
 
-    lseek(output_fd, 0, SEEK_END);
-    while (read(output_fd, buffer, block_size) > 0)
+    lseek(input_fd, -block_size, SEEK_END);
+    while (read(input_fd, buffer, block_size) > 0)
     {
         write(output_fd, buffer, block_size);
-        offset_current = lseek(output_fd, -2 * block_size, SEEK_CUR);
+        offset_current = lseek(input_fd, -2 * block_size, SEEK_CUR);
         if (offset_current == offset_header)
             break ;
     }
