@@ -1,135 +1,170 @@
 #include "../../includes/libft.h"
 #include "bmp.h"
 
-#define R 0
-#define G 1
-#define B 2
-
-typedef void	(*func_pointer) (int height, int width, RGBTRIPLE image[height][width]);
-
-int		get_filter_choice(void);
-int		get_new_filefd(int filter_choice);
-void	copy_bmp_header(int original_bmp, int new_bmp);
-void	filter(int original_fd, int filter_choice);
-void	get_file_info(BITMAPFILEHEADER *b_fileheader, BITMAPINFOHEADER *b_info, int original_fd);
-void	check_file_validity(BITMAPFILEHEADER bf, BITMAPINFOHEADER bi, int in_fd);
 void	get_file_size(int *height, int *width, BITMAPINFOHEADER b_info);
-void	allocage_new_image(RGBTRIPLE **image, int height, int width);
-void	free_new_image(RGBTRIPLE **image, int height);
-void	read_original_image(RGBTRIPLE **image, int height, int width, int file_fd);
+void	get_file_info(BITMAPFILEHEADER *b_fileheader, BITMAPINFOHEADER *b_info, int original_fd);
+void	get_original_fd(char *filename, int *original_fd);
+void 	copy_bmp_header(int *new_fd, BITMAPFILEHEADER *b_fileheader, BITMAPINFOHEADER *b_info, int choice, char *orig_filename);
+int		get_new_fd(int choice, char *orig_filename);
+int		get_filter_choice(char *filename);
+void	check_file_validity(BITMAPFILEHEADER bf, BITMAPINFOHEADER bi, int in_fd);
+void	grayscale(int height, int width, int padding, int orig_fd, int new_fd);
+void	sepia(int height, int width, int padding, int orig_fd, int new_fd);
+void	reflection(int height, int width, int padding, int orig_fd, int new_fd);
 
-void	grayscale(int height, int width, RGBTRIPLE image[height][width]);
-void	sepia(int height, int width, RGBTRIPLE image[height][width]);
-void	reflection(int height, int width, RGBTRIPLE image[height][width]);
-void	blur(int height, int width, RGBTRIPLE image[height][width]);
-void	edges(int height, int width, RGBTRIPLE image[height][width]);
-
-static const func_pointer	dispatch_table[5] = {
-	grayscale,
-	sepia,
-	reflection,
-	blur,
-	edges
-};
-
-int	main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int					filter_choice;
-	int					original_bmp_fd;
 	BITMAPFILEHEADER	b_fileheader;
 	BITMAPINFOHEADER	b_info;
 	int					height;
 	int					width;
-	RGBTRIPLE			**image;
+	int					choice;
+	int					padding;
+	int					new_fd;
+	int					original_fd;
 
 	if (argc != 2)
 	{
 		ft_printf("Usage: %s image\n", argv[0]);
 		return (1);
 	}
-
-	original_bmp_fd = open(argv[1], O_RDONLY);
-	if (original_bmp_fd == -1)
-	{
-		ft_printf("ERROR opening file %s\n", argv[1]);
-		exit(1);
-	}
-
-	get_file_info(&b_fileheader, &b_info, original_bmp_fd);
-	check_file_validity(b_fileheader, b_info, original_bmp_fd);
+	get_original_fd(argv[1], &original_fd);
+	get_file_info(&b_fileheader, &b_info, original_fd);
+	check_file_validity(b_fileheader, b_info, original_fd);
 	get_file_size(&height, &width, b_info);
-	filter_choice = get_filter_choice();
-	allocate_new_image(image, height, width);
-
-	read_original_image(image, height, width, original_bmp_fd);
-
-	// filter(original_bmp_fd, filter_choice);
-
-	free_new_image(image, height);
-}
-
-void	read_original_image(RGBTRIPLE **image, int height, int width, int file_fd)
-{
-	int	padding;
-	int	i;
+	choice = get_filter_choice(argv[1]);
+	copy_bmp_header(&new_fd, &b_fileheader, &b_info, choice, argv[1]);
 
 	padding = (4 - (width * sizeof(RGBTRIPLE)) % 4) % 4;
-	i = 0;
-	while (i < height)
-	{
-		read(file_fd, image[i], sizeof(RGBTRIPLE) * width);
-		lseek(file_fd, padding, SEEK_CUR);			// skip padding
-		i++;
-	}
+	if (choice == 1)
+		grayscale(height, width, padding, original_fd, new_fd);
+	else if (choice == 2)
+		sepia(height, width, padding, original_fd, new_fd);
+	else if (choice == 3)
+		reflection(height, width, padding, original_fd, new_fd);
+	// else if (choice == 4)
+	// 	blur(height, width, padding, original_fd, new_fd);
+	// else if (choice == 5)
+	// 	edges(height, width, padding, original_fd, new_fd);
+
+	return (0);
 }
 
-void	allocage_new_image(RGBTRIPLE **image, int height, int width)
+void	reflection(int height, int width, int padding, int orig_fd, int new_fd)
 {
-	int	i;
-
-	image = (RGBTRIPLE**) malloc(sizeof(RGBTRIPLE*) * height);
-	if (!image)
-	{
-		ft_printf("ERROR malloc RGB** in new image.\n");
-		exit(3);
-	}
+	RGBTRIPLE	new_pixel[width];
+	BYTE		new_red;
+	BYTE		new_green;
+	BYTE		new_blue;
+	int			i;
+	int			j;
 
 	i = 0;
 	while (i < height)
 	{
-		image[i] = (RGBTRIPLE*) malloc(sizeof(RGBTRIPLE) * width);
-		if (!(image[i]))
+		read(orig_fd, new_pixel, sizeof(RGBTRIPLE) * width);
+		j = width - 1;
+		while (j >= 0)
 		{
-			ft_printf("ERROR malloc RGB* in new image.\n");
-			exit(4);
+			write(new_fd, &new_pixel[j], sizeof(RGBTRIPLE));
+			j--;
 		}
+
+		j = 0;
+		while (j < padding)
+		{
+			write(new_fd, 0, 1);
+			j++;
+		}
+		lseek(orig_fd, padding, SEEK_CUR);
 		i++;
 	}
 }
 
-void	free_new_image(RGBTRIPLE **image, int height)
+void	sepia(int height, int width, int padding, int orig_fd, int new_fd)
 {
-	int	i;
+	RGBTRIPLE	new_pixel[width];
+	BYTE		new_red;
+	BYTE		new_green;
+	BYTE		new_blue;
+	int			i;
+	int			j;
 
 	i = 0;
 	while (i < height)
 	{
-		free(image[i]);
+		read(orig_fd, new_pixel, sizeof(RGBTRIPLE) * width);
+		j = 0;
+		while (j < width)
+		{
+			if ((0.393 * new_pixel[j].rgbtRed + 0.769 * new_pixel[j].rgbtGreen + 0.189 * new_pixel[j].rgbtBlue) > 255)
+				new_red = 255;
+			else
+				new_red = (BYTE) (0.393 * new_pixel[j].rgbtRed + 0.769 * new_pixel[j].rgbtGreen + 0.189 * new_pixel[j].rgbtBlue);
+
+			if ((0.349 * new_pixel[j].rgbtRed + 0.686 * new_pixel[j].rgbtGreen + 0.168 * new_pixel[j].rgbtBlue) > 255)
+				new_green = 255;
+			else
+				new_green = (BYTE) (0.349 * new_pixel[j].rgbtRed + 0.686 * new_pixel[j].rgbtGreen + 0.168 * new_pixel[j].rgbtBlue);
+
+			if ((0.272 * new_pixel[j].rgbtRed + 0.534 * new_pixel[j].rgbtGreen + 0.131 * new_pixel[j].rgbtBlue) > 255)
+				new_blue = 255;
+			else
+				new_blue = (BYTE) (0.272 * new_pixel[j].rgbtRed + 0.534 * new_pixel[j].rgbtGreen + 0.131 * new_pixel[j].rgbtBlue);
+
+			new_pixel[j].rgbtRed = new_red;
+			new_pixel[j].rgbtGreen = new_green;
+			new_pixel[j].rgbtBlue = new_blue;
+			j++;
+		}
+		write(new_fd, new_pixel, sizeof(RGBTRIPLE) * width);
+		j = 0;
+		while (j < padding)
+		{
+			write(new_fd, 0, 1);
+			j++;
+		}
+		lseek(orig_fd, padding, SEEK_CUR);		// skip padding in original file
 		i++;
 	}
-	free(image);
 }
 
-void	get_file_size(int *height, int *width, BITMAPINFOHEADER b_info)
+void	grayscale(int height, int width, int padding, int orig_fd, int new_fd)
 {
-	*height = abs(b_info.biHeight);
-	*width = b_info.biWidth;
+	RGBTRIPLE	new_pixel[width];
+	BYTE		average;
+	int			i;
+	int			j;
+
+	i = 0;
+	while (i < height)
+	{
+		read(orig_fd, new_pixel, sizeof(RGBTRIPLE) * width);
+		j = 0;
+		while (j < width)
+		{
+			average = (new_pixel[j].rgbtRed + new_pixel[j].rgbtGreen + new_pixel[j].rgbtBlue) / 3;
+			new_pixel[j].rgbtRed = average;
+			new_pixel[j].rgbtGreen = average;
+			new_pixel[j].rgbtBlue = average;
+			j++;
+		}
+		write(new_fd, new_pixel, sizeof(RGBTRIPLE) * width);
+		j = 0;
+		while (j < padding)
+		{
+			write(new_fd, 0, 1);
+			j++;
+		}
+		lseek(orig_fd, padding, SEEK_CUR);
+		i++;
+	}
 }
 
 void	check_file_validity(BITMAPFILEHEADER bf, BITMAPINFOHEADER bi, int in_fd)
 {
-	if (bf.bfType != 0x4d42 || bf.bfOffBits != 54 || bi.biSize != 40 ||
-		bi.biBitCount != 24 || bi.biCompression != 0)
+	if (bf.bfType != 0x4d42 || bf.bfOffBits != 54 || bi.biSize != 40 || bi.biBitCount != 24
+	|| bi.biCompression != 0)
 	{
 		close(in_fd);
 		ft_printf("Unsupported file format.\n");
@@ -137,58 +172,7 @@ void	check_file_validity(BITMAPFILEHEADER bf, BITMAPINFOHEADER bi, int in_fd)
 	}
 }
 
-void	get_file_info(BITMAPFILEHEADER *b_fileheader, BITMAPINFOHEADER *b_info, int original_fd)
-{
-	read(original_fd, b_fileheader, sizeof(BITMAPFILEHEADER));
-	read(original_fd, b_info, sizeof(BITMAPINFOHEADER));
-}
-
-void	filter(int original_fd, int filter_choice)
-{
-	int	new_fd;
-
-	new_fd = get_new_filefd(filter_choice);
-	copy_bmp_header(original_fd, new_fd);
-
-	dispatch_table[filter_choice - 1](original_fd, new_fd);	// call the correct filter
-}
-
-void	copy_bmp_header(int original_bmp, int new_bmp)
-{
-	char	buffer[54];		// sizeof 24-bit bmp header
-
-	read(original_bmp, buffer, 54);
-	write(new_bmp, buffer, 54);
-}
-
-int	get_new_filefd(int filter_choice)
-{
-	char	*filename;
-	int		new_fd;
-
-	new_fd = -1;
-	if (filter_choice == 1)
-		filename = "grayscale.bmp";
-	else if (filter_choice == 2)
-		filename = "sepia.bmp";
-	else if (filter_choice == 3)
-		filename = "reflection.bmp";
-	else if (filter_choice == 4)
-		filename = "blur.bmp";
-	else if (filter_choice == 5)
-		filename = "edges.bmp";
-
-	new_fd = open(filename, O_WRONLY | O_CREAT, 0644);
-	if (new_fd != -1)			// return valid file_fd
-		return (new_fd);
-	else
-	{
-		ft_printf("ERROR opening new file\n");
-		exit(2);
-	}
-}
-
-int	get_filter_choice(void)
+int	get_filter_choice(char *filename)
 {
 	char	*input;
 	int		filter_choice;
@@ -196,7 +180,7 @@ int	get_filter_choice(void)
 	filter_choice = 0;
 	while (filter_choice < 1 || filter_choice > 5)
 	{
-		ft_printf("Enter your choice of filter:\n");
+		ft_printf("Enter your choice of filter for \'%s\':\n", filename);
 		ft_printf("\t1: Grayscale\n");
 		ft_printf("\t2: Sepia\n");
 		ft_printf("\t3: Reflection\n");
@@ -213,38 +197,67 @@ int	get_filter_choice(void)
 	return (filter_choice);
 }
 
-// void	grayscale(int original_fd, int new_fd)
-// {
-// 	int8_t	pixel[3];
-// 	int8_t	average;
+int	get_new_fd(int choice, char *orig_filename)
+{
+	int		new_fd;
+	char	*filter;
+	char	*filename;
+	char	*orig_noext;
+	size_t	orig_len;
 
-// 	while (read(original_fd, pixel, 24) > 0)
-// 	{
-// 		average = (int8_t)((pixel[R] + pixel[G] + pixel[B]) / 3);
-// 		pixel[R] = average;
-// 		pixel[G] = average;
-// 		pixel[B] = average;
-// 		write(new_fd, pixel, 24);
-// 	}
-// }
+	if (choice == 1)
+		filter = "grayscale.bmp";
+	else if (choice == 2)
+		filter = "sepia.bmp";
+	else if (choice == 3)
+		filter = "reflection.bmp";
+	else if (choice == 4)
+		filter = "blur.bmp";
+	else if (choice == 5)
+		filter = "edges.bmp";
 
-// void	sepia(int original_fd, int new_fd)
-// {
-// 	(void)original_fd;
-// 	(void)new_fd;
-// }
-// void	reflection(int original_fd, int new_fd)
-// {
-// 	(void)original_fd;
-// 	(void)new_fd;
-// }
-// void	blur(int original_fd, int new_fd)
-// {
-// 	(void)original_fd;
-// 	(void)new_fd;
-// }
-// void	edges(int original_fd, int new_fd)
-// {
-// 	(void)original_fd;
-// 	(void)new_fd;
-// }
+	orig_len = ft_strlen(orig_filename);
+	orig_noext = ft_strsub(orig_filename, 0, orig_len - 4);		// without .bmp
+	filename = ft_strjoin_three(orig_noext, "_", filter);
+
+	new_fd = open(filename, O_WRONLY | O_CREAT, 0644);
+	ft_strdel(&filename);
+	ft_strdel(&orig_noext);
+
+	if (new_fd == -1)
+	{
+		ft_printf("ERROR opening new file\n");
+		exit(2);
+	}
+	else
+		return (new_fd);
+}
+
+void copy_bmp_header(int *new_fd, BITMAPFILEHEADER *b_fileheader, BITMAPINFOHEADER *b_info, int choice, char *orig_filename)
+{
+	*new_fd = get_new_fd(choice, orig_filename);
+	write(*new_fd, b_fileheader, sizeof(BITMAPFILEHEADER));
+	write(*new_fd, b_info, sizeof(BITMAPINFOHEADER));
+}
+
+void	get_original_fd(char *filename, int *original_fd)
+{
+	*original_fd = open(filename, O_RDONLY);
+	if (*original_fd == -1)
+	{
+		ft_printf("ERROR opening file %s\n", filename);
+		exit(1);
+	}
+}
+
+void	get_file_info(BITMAPFILEHEADER *b_fileheader, BITMAPINFOHEADER *b_info, int original_fd)
+{
+	read(original_fd, b_fileheader, sizeof(BITMAPFILEHEADER));
+	read(original_fd, b_info, sizeof(BITMAPINFOHEADER));
+}
+
+void	get_file_size(int *height, int *width, BITMAPINFOHEADER b_info)
+{
+	*height = abs(b_info.biHeight);
+	*width = b_info.biWidth;
+}
