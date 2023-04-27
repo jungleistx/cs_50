@@ -12,6 +12,8 @@ int main(int argc, char *argv[])
     int         input_fd;
     int         output_fd;
     int         block_size;
+    off_t       offset_header;
+    off_t       offset_current;
     WAVHEADER   header;
 
     // Ensure proper usage
@@ -34,6 +36,7 @@ int main(int argc, char *argv[])
     // Read header
     // TODO #3
     read(input_fd, &header, sizeof(WAVHEADER));
+    offset_header = lseek(input_fd, 0, SEEK_CUR);
 
     // Use check_format to ensure WAV format
     // TODO #4
@@ -63,6 +66,18 @@ int main(int argc, char *argv[])
 
     // Write reversed audio to file
     // TODO #8
+    unsigned char buffer[block_size];
+
+    lseek(output_fd, 0, SEEK_END);
+    while (read(output_fd, buffer, block_size) > 0)
+    {
+        write(output_fd, buffer, block_size);
+        offset_current = lseek(output_fd, -2 * block_size, SEEK_CUR);
+        if (offset_current == offset_header)
+            break ;
+    }
+    close(input_fd);
+    close(output_fd);
 }
 
 int check_format(WAVHEADER header)
