@@ -1,8 +1,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "wav.h"
+#include "../../includes/libft.h"
 
 int check_format(WAVHEADER header);
 int get_block_size(WAVHEADER header);
@@ -11,6 +11,11 @@ int main(int argc, char *argv[])
 {
     // Ensure proper usage
     // TODO #1
+    if (argc != 3)
+    {
+        ft_printf("Usage: %s input.wav output.wav\n", argv[0]);
+        return (1);
+    }
 
     // Open input file for reading
     // TODO #2
