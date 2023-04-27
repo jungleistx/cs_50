@@ -11,6 +11,7 @@ void	check_file_validity(BITMAPFILEHEADER bf, BITMAPINFOHEADER bi, int in_fd);
 void	grayscale(int height, int width, int padding, int orig_fd, int new_fd);
 void	sepia(int height, int width, int padding, int orig_fd, int new_fd);
 void	reflection(int height, int width, int padding, int orig_fd, int new_fd);
+void	blur(int height, int width, int padding, int orig_fd, int new_fd);
 
 int main(int argc, char **argv)
 {
@@ -42,12 +43,113 @@ int main(int argc, char **argv)
 		sepia(height, width, padding, original_fd, new_fd);
 	else if (choice == 3)
 		reflection(height, width, padding, original_fd, new_fd);
-	// else if (choice == 4)
-	// 	blur(height, width, padding, original_fd, new_fd);
+	else if (choice == 4)
+		blur(height, width, padding, original_fd, new_fd);
 	// else if (choice == 5)
 	// 	edges(height, width, padding, original_fd, new_fd);
 
+	close(original_fd);
+	close(new_fd);
 	return (0);
+}
+
+void	blur(int height, int width, int padding, int orig_fd, int new_fd)
+{
+	RGBTRIPLE	image[height][width];
+	RGBTRIPLE	new;
+	int			i;
+	int			j;
+	int			k;
+
+	i = 0;
+	while (i < height)
+	{
+		read(orig_fd, image[i], sizeof(RGBTRIPLE) * width);
+		lseek(orig_fd, padding, SEEK_CUR);
+		i++;
+	}
+
+	i = 0;
+	while (i < height)
+	{
+		j = 0;
+		while (j < width)
+		{
+			if (i == 0)				// first row
+			{
+				if (j == 0)
+				{
+					new.rgbtRed = (image[i][j].rgbtRed + image[i][j + 1].rgbtRed + image[i + 1][j].rgbtRed + image[i + 1][j + 1].rgbtRed) / 4;
+					new.rgbtGreen = (image[i][j].rgbtGreen + image[i][j + 1].rgbtGreen + image[i + 1][j].rgbtGreen + image[i + 1][j + 1].rgbtGreen) / 4;
+					new.rgbtBlue = (image[i][j].rgbtBlue + image[i][j + 1].rgbtBlue + image[i + 1][j].rgbtBlue + image[i + 1][j + 1].rgbtBlue) / 4;
+				}
+				else if (j < width - 1)
+				{
+					new.rgbtRed = (image[i][j - 1].rgbtRed + image[i][j].rgbtRed + image[i][j + 1].rgbtRed + image[i + 1][j - 1].rgbtRed + image[i + 1][j].rgbtRed + image[i + 1][j + 1].rgbtRed) / 6;
+					new.rgbtGreen = (image[i][j - 1].rgbtGreen + image[i][j].rgbtGreen + image[i][j + 1].rgbtGreen + image[i + 1][j - 1].rgbtGreen + image[i + 1][j].rgbtGreen + image[i + 1][j + 1].rgbtGreen) / 6;
+					new.rgbtBlue = (image[i][j - 1].rgbtBlue + image[i][j].rgbtBlue + image[i][j + 1].rgbtBlue + image[i + 1][j - 1].rgbtBlue + image[i + 1][j].rgbtBlue + image[i + 1][j + 1].rgbtBlue) / 6;
+				}
+				else
+				{
+					new.rgbtRed = (image[i][j - 1].rgbtRed + image[i][j].rgbtRed + image[i + 1][j - 1].rgbtRed + 	image[i + 1][j].rgbtRed) / 4;
+					new.rgbtGreen = (image[i][j - 1].rgbtGreen + image[i][j].rgbtGreen + image[i + 1][j - 1].rgbtGreen + 	image[i + 1][j].rgbtGreen) / 4;
+					new.rgbtBlue = (image[i][j - 1].rgbtBlue + image[i][j].rgbtBlue + image[i + 1][j - 1].rgbtBlue + 	image[i + 1][j].rgbtBlue) / 4;
+				}
+			}
+			else if (i < height - 1)	// mid rows
+			{
+				if (j == 0)
+				{
+					new.rgbtRed = (image[i - 1][j].rgbtRed + image[i - 1][j + 1].rgbtRed + image[i][j].rgbtRed + image[i][j + 1].rgbtRed + image[i + 1][j].rgbtRed + image[i + 1][j + 1].rgbtRed) / 6;
+					new.rgbtGreen = (image[i - 1][j].rgbtGreen + image[i - 1][j + 1].rgbtGreen + image[i][j].rgbtGreen + image[i][j + 1].rgbtGreen + image[i + 1][j].rgbtGreen + image[i + 1][j + 1].rgbtGreen) / 6;
+					new.rgbtBlue = (image[i - 1][j].rgbtBlue + image[i - 1][j + 1].rgbtBlue + image[i][j].rgbtBlue + image[i][j + 1].rgbtBlue + image[i + 1][j].rgbtBlue + image[i + 1][j + 1].rgbtBlue) / 6;
+
+				}
+				else if (j < width - 1)
+				{
+					new.rgbtRed = (image[i - 1][j - 1].rgbtRed + image[i - 1][j].rgbtRed + image[i - 1][j + 1].rgbtRed + image[i][j - 1].rgbtRed + image[i][j].rgbtRed + image[i][j + 1].rgbtRed + image[i + 1][j - 1].rgbtRed + image[i + 1][j].rgbtRed + image[i + 1][j + 1].rgbtRed) / 9;
+					new.rgbtGreen = (image[i - 1][j - 1].rgbtGreen + image[i - 1][j].rgbtGreen + image[i - 1][j + 1].rgbtGreen + image[i][j - 1].rgbtGreen + image[i][j].rgbtGreen + image[i][j + 1].rgbtGreen + image[i + 1][j - 1].rgbtGreen + image[i + 1][j].rgbtGreen + image[i + 1][j + 1].rgbtGreen) / 9;
+					new.rgbtBlue = (image[i - 1][j - 1].rgbtBlue + image[i - 1][j].rgbtBlue + image[i - 1][j + 1].rgbtBlue + image[i][j - 1].rgbtBlue + image[i][j].rgbtBlue + image[i][j + 1].rgbtBlue + image[i + 1][j - 1].rgbtBlue + image[i + 1][j].rgbtBlue + image[i + 1][j + 1].rgbtBlue) / 9;
+				}
+				else
+				{
+					new.rgbtRed = (image[i - 1][j - 1].rgbtRed + image[i - 1][j].rgbtRed + image[i][j - 1].rgbtRed + image[i][j].rgbtRed + image[i + 1][j - 1].rgbtRed + image[i + 1][j].rgbtRed) / 6;
+					new.rgbtGreen = (image[i - 1][j - 1].rgbtGreen + image[i - 1][j].rgbtGreen + image[i][j - 1].rgbtGreen + image[i][j].rgbtGreen + image[i + 1][j - 1].rgbtGreen + image[i + 1][j].rgbtGreen) / 6;
+					new.rgbtBlue = (image[i - 1][j - 1].rgbtBlue + image[i - 1][j].rgbtBlue + image[i][j - 1].rgbtBlue + image[i][j].rgbtBlue + image[i + 1][j - 1].rgbtBlue + image[i + 1][j].rgbtBlue) / 6;
+				}
+			}
+			else 					// last row
+			{
+				if (j == 0)
+				{
+					new.rgbtRed = (image[i - 1][j].rgbtRed + image[i - 1][j + 1].rgbtRed + image[i][j].rgbtRed + image[i][j + 1].rgbtRed) / 4;
+					new.rgbtGreen = (image[i - 1][j].rgbtGreen + image[i - 1][j + 1].rgbtGreen + image[i][j].rgbtGreen + image[i][j + 1].rgbtGreen) / 4;
+					new.rgbtBlue = (image[i - 1][j].rgbtBlue + image[i - 1][j + 1].rgbtBlue + image[i][j].rgbtBlue + image[i][j + 1].rgbtBlue) / 4;
+				}
+				else if (j < width - 1)
+				{
+					new.rgbtRed = (image[i - 1][j - 1].rgbtRed + image[i - 1][j].rgbtRed + image[i - 1][j + 1].rgbtRed + image[i][j - 1].rgbtRed + image[i][j].rgbtRed + image[i][j + 1].rgbtRed) / 6;
+					new.rgbtGreen = (image[i - 1][j - 1].rgbtGreen + image[i - 1][j].rgbtGreen + image[i - 1][j + 1].rgbtGreen + image[i][j - 1].rgbtGreen + image[i][j].rgbtGreen + image[i][j + 1].rgbtGreen) / 6;
+					new.rgbtBlue = (image[i - 1][j - 1].rgbtBlue + image[i - 1][j].rgbtBlue + image[i - 1][j + 1].rgbtBlue + image[i][j - 1].rgbtBlue + image[i][j].rgbtBlue + image[i][j + 1].rgbtBlue) / 6;
+				}
+				else
+				{
+					new.rgbtRed = (image[i - 1][j - 1].rgbtRed + image[i - 1][j].rgbtRed + image[i][j - 1].rgbtRed + image[i][j].rgbtRed) / 4;
+					new.rgbtGreen = (image[i - 1][j - 1].rgbtGreen + image[i - 1][j].rgbtGreen + image[i][j - 1].rgbtGreen + image[i][j].rgbtGreen) / 4;
+					new.rgbtBlue = (image[i - 1][j - 1].rgbtBlue + image[i - 1][j].rgbtBlue + image[i][j - 1].rgbtBlue + image[i][j].rgbtBlue) / 4;
+				}
+			}
+			write(new_fd, &new, sizeof(RGBTRIPLE));
+			j++;
+		}
+		k = 0;
+		while (k < padding)
+		{
+			write(new_fd, 0, 1);
+			k++;
+		}
+		i++;
+	}
 }
 
 void	reflection(int height, int width, int padding, int orig_fd, int new_fd)
