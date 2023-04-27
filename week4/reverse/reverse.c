@@ -9,6 +9,8 @@ int get_block_size(WAVHEADER header);
 
 int main(int argc, char *argv[])
 {
+    int input_fd;
+
     // Ensure proper usage
     // TODO #1
     if (argc != 3)
@@ -19,6 +21,12 @@ int main(int argc, char *argv[])
 
     // Open input file for reading
     // TODO #2
+    input_fd = open(argv[1], O_RDONLY);
+    if (input_fd == -1)
+    {
+        ft_printf("Error opening \'%s\'.\n", argv[1]);
+        return (2);
+    }
 
     // Read header
     // TODO #3
