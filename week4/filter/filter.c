@@ -55,13 +55,6 @@ int main(int argc, char **argv)
 	return (0);
 }
 
-/*
-	gx				gy
-	-1	0	1		-1	-2	-1
-	-2	0	2		0	0	0
-	-1	0	1		1	2	1
-*/
-
 void	edges(int height, int width, int padding, int orig_fd, int new_fd)
 {
 	RGBTRIPLE	image[height][width];
@@ -301,9 +294,6 @@ void	edges(int height, int width, int padding, int orig_fd, int new_fd)
 					else
 						new.rgbtBlue = sqrt(gx * gx + gy * gy);
 				}
-					//		gx = (-1 * ) + (0) + () + (-2 * ) + (0) + (2 * ) + (-1 * ) + (0) + ();
-					// 		gy = (-1 * ) + (-2 * ) + (-1 * ) + (0) + (0) + (0) + () + (2 * ) + ();
-					// 		image[i][j].rgbtRed
 			}
 			write(new_fd, &new, sizeof(RGBTRIPLE));
 			j++;
