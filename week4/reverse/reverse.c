@@ -10,6 +10,7 @@ int get_block_size(WAVHEADER header);
 int main(int argc, char *argv[])
 {
     int         input_fd;
+    int         output_fd;
     WAVHEADER   header;
 
     // Ensure proper usage
@@ -43,6 +44,13 @@ int main(int argc, char *argv[])
 
     // Open output file for writing
     // TODO #5
+    output_fd = open(argv[2], O_WRONLY | O_CREAT, 0644);
+    if (output_fd == -1)
+    {
+        close(input_fd);
+        ft_printf("Error opening %s.\n", argv[2]);
+        return (4);
+    }
 
     // Write header to file
     // TODO #6
