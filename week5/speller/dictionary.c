@@ -101,7 +101,26 @@ bool load(const char *dictionary)
 unsigned int size(void)
 {
     // TODO
-    return 0;
+    unsigned int    words;
+    node            *tmp;
+    int             i;
+
+    words = 0;
+    i = 0;
+    while (i < N)
+    {
+        if (table[i])
+        {
+            tmp = table[i];
+            while (tmp)
+            {
+                words++;
+                tmp = tmp->next;
+            }
+        }
+        i++;
+    }
+    return (words);
 }
 
 // Unloads dictionary from memory, returning true if successful, else false
