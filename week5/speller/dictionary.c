@@ -45,7 +45,7 @@ char    *to_lower(const char *str)
         while (str[i])
         {
             if (str[i] >= 65 && str[i] <= 90)       // A-Z
-                str_lower[i] = str[i] + 22;
+                str_lower[i] = str[i] + 32;
             else
                 str_lower[i] = str[i];
             i++;
@@ -69,7 +69,7 @@ bool check(const char *word)
     char            *word_lower;
     unsigned int    hash_value;
 
-    if (!word)              // null guard
+    if (!word)
         return (false);
 
     word_lower = to_lower(word);
@@ -82,17 +82,20 @@ bool check(const char *word)
     }
     else
     {
-        while (tmp && tmp->word)
+        while (tmp)
         {
-            if (tmp->word[0] > word_lower[0])    // hashtable entry is later in dictionary
+            if (tmp->word[0] < word_lower[0])   // gone over
             {
                 free(word_lower);
                 return (false);
             }
-            else if (ft_strequ(tmp->word, word_lower))
+            else if (tmp->word[0] == word_lower[0])
             {
-                free(word_lower);
-                return (true);
+                if (ft_strequ(tmp->word, word_lower))
+                {
+                    free(word_lower);
+                    return (true);
+                }
             }
             tmp = tmp->next;
         }
@@ -149,20 +152,16 @@ bool load(const char *dictionary)
                 ft_printf("Error allocating new node.\n");
                 exit(3);
             }
-            new->word = ft_strdup(line);
+            ft_strcpy(new->word, line);
             new->next = NULL;
 
             hash_value = hash(line);
             tmp = table[hash_value];
 
-            if (tmp == NULL)
-                table[hash_value] = new;
-            else
-            {
-                while (tmp->next)
-                    tmp = tmp->next;
-                tmp->next = new;
-            }
+            if (tmp != NULL)
+                new->next = table[hash_value];      // to not lose list
+            table[hash_value] = new;                // new node to front
+
             free(line);
         }
     }
@@ -212,7 +211,6 @@ bool unload(void)
             while (tmp)
             {
                 tmp = tmp->next;
-                free(table[i]->word);
                 free(table[i]);
                 table[i] = tmp;
             }
