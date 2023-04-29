@@ -25,7 +25,28 @@ node *table[N];
 bool check(const char *word)
 {
     // TODO
-    return false;
+    node            *tmp;
+    unsigned int    hash_value;
+
+    if (!word)              // null guard
+        return (false);
+
+    hash_value = hash(word);
+    tmp = table[hash_value];
+    if (tmp == NULL)            // empty hashtable
+        return (false);
+    else
+    {
+        while (tmp && tmp->word)
+        {
+            if (tmp->word[0] > word[0])     // hashtable entry is later in dictionary
+                return (false);
+            else if (ft_strequ(word, tmp->word))
+                return (true);
+            tmp = tmp->next;
+        }
+    }
+    return (false);
 }
 
 // Hashes word to a number
