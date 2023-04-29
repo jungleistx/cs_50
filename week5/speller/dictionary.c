@@ -48,7 +48,53 @@ unsigned int hash(const char *word)
 bool load(const char *dictionary)
 {
     // TODO
-    return false;
+    char    *line;
+    int     fd;
+    int     i;
+    int     hash_value;
+    node    *new;
+    node    *tmp;
+
+    fd = open(dictionary, O_RDONLY);
+    if (fd == -1)
+        return (false);
+
+    i = 0;
+    while (i < N)       // set all node* to NULL
+    {
+        table[i] = NULL;
+        i++;
+    }
+
+    while (get_next_line(fd, &line) > 0)    // read and load
+    {
+        if (line)
+        {
+            new = (node *) malloc(sizeof(node));
+            if (!new)
+            {
+                ft_printf("Error allocating new node.\n");
+                exit(3);
+            }
+            new->word = ft_strdup(line);
+            new->next = NULL;
+
+            hash_value = hash(line);
+            tmp = table[hash_value];
+
+            if (tmp == NULL)
+                table[hash_value] = new;
+            else
+            {
+                while (tmp->next)
+                    tmp = tmp->next;
+                tmp->next = new;
+            }
+            free(line);
+        }
+    }
+    close(fd);
+    return (true);
 }
 
 // Returns number of words in dictionary if loaded, else 0 if not yet loaded
