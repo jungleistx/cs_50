@@ -200,5 +200,24 @@ unsigned int size(void)
 bool unload(void)
 {
     // TODO
-    return false;
+    int     i;
+    node    *tmp;
+
+    i = 0;
+    while (i < N)
+    {
+        if (table[i])
+        {
+            tmp = table[i];
+            while (tmp)
+            {
+                tmp = tmp->next;
+                free(table[i]->word);
+                free(table[i]);
+                table[i] = tmp;
+            }
+        }
+        i++;
+    }
+    return (true);
 }
