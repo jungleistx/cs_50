@@ -1,10 +1,8 @@
 # TODO
 
-def get_int(str):
+def get_float(str):
 	try:
-		num = int(str)
+		num = float(str)
 		return num
 	except ValueError:
-		return 0
-
-
+		return 0.0
