@@ -45,7 +45,6 @@ def count_checksum(len, number, card_type):
 
 patterns = ["^\d{13}$", "^\d{15}$", "^\d{16}$"]		# match 13,15,16, all digits
 card_number = get_cardnumber()
-ret_value = 0
 
 if re.search(patterns[0], card_number):		# len 13
 	validate_number = r'^4.*'				# start with 4
