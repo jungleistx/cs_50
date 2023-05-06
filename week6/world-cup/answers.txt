@@ -1,11 +1,11 @@
 Times:
 
-10 simulations: TODO (record time using 0m0.000s format)
-100 simulations: TODO (record time using 0m0.000s format)
-1000 simulations: TODO (record time using 0m0.000s format)
-10000 simulations: TODO (record time using 0m0.000s format)
-100000 simulations: TODO (record time using 0m0.000s format)
-1000000 simulations: TODO (record time using 0m0.000s format)
+10 simulations: TODO (0.042 total)
+100 simulations: TODO (0.039 total)
+1000 simulations: TODO (0.039 total)
+10000 simulations: TODO (0.097 total)
+100000 simulations: TODO (0.666 total)
+1000000 simulations: TODO (6.410 total)
 
 Questions:
 
@@ -13,3 +13,6 @@ Which predictions, if any, proved incorrect as you increased the number of simul
 
 Suppose you're charged a fee for each second of compute time your program uses.
 After how many simulations would you call the predictions "good enough"?: TODO
+
+After 1000 simulations, the results seems to be consistent. Even with 10000 simulations, the program runs in under tenth of a second.
+10000 is a good middle-ground for speed and accuracy.
