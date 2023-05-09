@@ -22,34 +22,32 @@ def main():
             else:
                 person.append(line)     # add the whole line to 'person' list (list of lists)
 
-    # # debug
-    # print (sequences)
-    # print()
-    # for line in person:
-    #     print(line)
-    """
-        name,AGATC,AATG,TATC
-        Alice,2,8,3
-        Bob,4,1,5
-        Charlie,3,2,5
-    """
 
-    # TODO: Read DNA sequence file into a variable
     with open(sys.argv[2], "r") as dna_file:
 
         for line in dna_file:
             dna_sequence_full = line[:-1]           # delete trailing newline
 
+    for dna_part, repeat_amount in sequences.items():        # chop each dict into key, value and find the value
+        repeat_amount = longest_match(dna_sequence_full, dna_part)
+        sequences[dna_part] = repeat_amount
 
-    # TODO: Find longest match of each STR in DNA sequence
 
-    for dna_part, repeated in sequences.items():        # chop each dict into key, value and find the value
-        repeated = longest_match(dna_sequence_full, dna_part)
-        sequences[dna_part] = repeated
+    for people in person:
 
-    # print(sequences)
+        found = True
+        i = 1
+        for sequence, amount in sequences.items():
+            if amount != int(people[i]):
+                found = False
+                break
+            i += 1
 
-    # TODO: Check database for matching profiles
+        if found == True:
+            print(people[0])
+            return
+
+    print("No match.")
 
     return
 
