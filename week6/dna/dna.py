@@ -4,12 +4,35 @@ import sys
 
 def main():
 
-    # TODO: Check for command-line usage
     if len(sys.argv) != 3:
         print(f"Usage: {sys.argv[0]} data.csv sequence.txt")
         exit(1)
 
-    # TODO: Read database file into a variable
+    sequences = {}      # empty dict for different sequences
+    person = []         # empty list for person
+
+    with open(sys.argv[1], "r") as file_csv:
+        lines = csv.reader(file_csv)
+
+        for line in lines:
+            if line[0] == 'name':       # first line, save the sequences in a dict with value 0
+                for sequence in line[1:]:       # type(str), skip 'name'
+                    if isinstance(sequence, str):
+                        sequences[sequence] = 0
+            else:
+                person.append(line)     # add the whole line to 'person' list (list of lists)
+
+    # # debug
+    # print (sequences)
+    # print()
+    # for line in person:
+    #     print(line)
+    """
+        name,AGATC,AATG,TATC
+        Alice,2,8,3
+        Bob,4,1,5
+        Charlie,3,2,5
+    """
 
     # TODO: Read DNA sequence file into a variable
 
