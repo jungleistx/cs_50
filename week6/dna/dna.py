@@ -39,10 +39,15 @@ def main():
 
         for line in dna_file:
             dna_sequence_full = line[:-1]           # delete trailing newline
-            # print(dna_sequence_full)
 
 
     # TODO: Find longest match of each STR in DNA sequence
+
+    for dna_part, repeated in sequences.items():        # chop each dict into key, value and find the value
+        repeated = longest_match(dna_sequence_full, dna_part)
+        sequences[dna_part] = repeated
+
+    # print(sequences)
 
     # TODO: Check database for matching profiles
 
