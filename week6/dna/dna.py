@@ -35,6 +35,12 @@ def main():
     """
 
     # TODO: Read DNA sequence file into a variable
+    with open(sys.argv[2], "r") as dna_file:
+
+        for line in dna_file:
+            dna_sequence_full = line[:-1]           # delete trailing newline
+            # print(dna_sequence_full)
+
 
     # TODO: Find longest match of each STR in DNA sequence
 
