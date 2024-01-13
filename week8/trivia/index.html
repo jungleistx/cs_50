@@ -16,7 +16,7 @@
 				}
 
 				var triggerButton = event.srcElement;
-				if (triggerButton.innerHTML == 'Japan') {
+				if (triggerButton.innerHTML == 'aaaaa') {
 					triggerButton.style.backgroundColor = 'green';
 					document.querySelector('#answer1_txt').innerHTML = 'Correct!';
 				}
@@ -24,6 +24,22 @@
 					triggerButton.style.backgroundColor = 'red';
 					document.querySelector('#answer1_txt').innerHTML = 'Incorrect!';
 				}
+			};
+
+			function checkAnswer_2(answer){
+
+				var inputField = document.querySelector('#answer2_field');
+				var answerText = document.querySelector('#answer2_txt')
+
+				if (answer.value.toLowerCase() == 'cinderella'){
+					inputField.style.backgroundColor = 'green';
+					answerText.innerHTML = 'Correct!';
+				}
+				else {
+					inputField.style.backgroundColor = 'red';
+					answerText.innerHTML = 'Incorrect!';
+				}
+				event.preventDefault();
 			};
 
 		</script>
@@ -43,10 +59,12 @@
 					<div>
 						<p id="answer1_txt"></p>
 					</div>
-					<button class="answer1_button" onclick="checkAnswer_1(event);">Mexico</button>
-					<button class="answer1_button" onclick="checkAnswer_1(event);">Germany</button>
-					<button class="answer1_button" onclick="checkAnswer_1(event);">Japan</button>
-					<button class="answer1_button" onclick="checkAnswer_1(event);">Saudi Arabia</button>
+					<div>
+						<button class="answer1_button" onclick="checkAnswer_1(event);">Mexico</button>
+						<button class="answer1_button" onclick="checkAnswer_1(event);">Germany</button>
+						<button class="answer1_button" onclick="checkAnswer_1(event);">Japan</button>
+						<button class="answer1_button" onclick="checkAnswer_1(event);">Saudi Arabia</button>
+					</div>
 				</div>
 			</div>
 
@@ -55,7 +73,13 @@
 				<hr>
 				<!-- TODO: Add free response question here -->
 				<h3>Who was Walt Disney's favorite princess?</h3>
-				<!-- Cinderella -->
+				<div>
+					<p id="answer2_txt"></p>
+				</div>
+				<form onsubmit="checkAnswer_2(answer);">
+					<input type="text" name="answer" placeholder="Perhaps Sleeping beauty?" autocomplete="off" id="answer2_field">
+					<button type="submit">Check answer</button>
+				</form>
 			</div>
 		</div>
 	</body>
