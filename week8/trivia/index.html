@@ -1,44 +1,53 @@
 <!DOCTYPE html>
 
 <html lang="en">
-    <head>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
-        <link href="styles.css" rel="stylesheet">
-        <title>Trivia!</title>
-        <script>
-            // TODO: Add code to check answers to questions
-        </script>
-    </head>
-    <body>
-        <div class="header">
-            <h1>Trivia!</h1>
-        </div>
+	<head>
+		<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+		<link href="styles.css" rel="stylesheet">
+		<title>Trivia!</title>
+		<script>
+			// TODO: Add code to check answers to questions
+			function checkAnswer_1(event){
+				var answer = event.srcElement;
+				if (answer.innerHTML == 'Japan') {
+					console.log('win');
+				}
+				else {
+					console.log('no');
+				}
+			};
 
-        <div class="container">
-            <div class="section">
-                <h2>Part 1: Multiple Choice </h2>
-                <hr>
-                <div>
-                    <p class="answer_txt"></p>
-                </div>
-                <div>
-                    <h3>In what country did the first Starbucks open outside of North America?</h3>
-                    <button>Mexico</button>
-                    <button>Germany</button>
-                    <button>Japan</button>
-                    <button>Netherlands</button>
-                    <!-- Japan -->
-                </div>
-                <!-- TODO: Add multiple choice question here -->
-            </div>
+		</script>
+	</head>
+	<body>
+		<div class="header">
+			<h1>Trivia!</h1>
+		</div>
 
-            <div class="section">
-                <h2>Part 2: Free Response</h2>
-                <hr>
-                <!-- TODO: Add free response question here -->
-                <h3>Who was Walt Disney's favorite princess?</h3>
-                <!-- Cinderella -->
-            </div>
-        </div>
-    </body>
+		<div class="container">
+			<div class="section">
+				<h2>Part 1: Multiple Choice </h2>
+				<hr>
+				<div>
+					<p class="answer_txt"></p>
+				</div>
+				<div>
+					<h3>In what country did the first Starbucks open outside of North America?</h3>
+					<button onclick="checkAnswer_1(event);">Mexico</button>
+					<button onclick="checkAnswer_1(event);">Germany</button>
+					<button onclick="checkAnswer_1(event);">Japan</button>
+					<button onclick="checkAnswer_1(event);">Saudi Arabia</button>
+				</div>
+				<!-- TODO: Add multiple choice question here -->
+			</div>
+
+			<div class="section">
+				<h2>Part 2: Free Response</h2>
+				<hr>
+				<!-- TODO: Add free response question here -->
+				<h3>Who was Walt Disney's favorite princess?</h3>
+				<!-- Cinderella -->
+			</div>
+		</div>
+	</body>
 </html>
